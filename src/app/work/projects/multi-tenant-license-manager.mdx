@@ -1,0 +1,251 @@
+---
+title: "Multi-Tenant License Management System"
+publishedAt: "2024-12-10"
+summary: "Designed and built an in-house multi-tenant license manager from scratch, replacing a third-party vendor and eliminating per-tenant licensing costs. Employee of the Quarter recognition."
+images:
+  - "/images/projects/multi-tenant-license-manager/cover-01.jpg"
+team:
+  - name: "Akash Tyagi"
+    role: "Software Engineer II"
+    avatar: "/images/avatar.png"
+    linkedIn: "https://www.linkedin.com/in/akashtyagi21/"
+---
+
+## The Problem
+
+Quark's SaaS platform was using **Nalperion** (a third-party licensing vendor) for feature management and license enforcement. The system worked, but had significant limitations:
+
+### Business Pain Points
+- **Per-tenant licensing fees** — Quark paid per tenant, which scaled badly as the client base grew
+- **Inflexible licensing logic** — Vendor's model didn't support custom enterprise deals (e.g., "Tenant A gets Feature X for 6 months, then automatically downgrades")
+- **Integration overhead** — Each new feature required vendor SDK updates and coordination with vendor support
+- **Vendor lock-in** — Changing licensing logic meant waiting on vendor roadmap
+
+### Technical Pain Points
+- **Latency** — License checks required external API calls (50-100ms per request)
+- **Reliability** — Vendor outages could block core platform functionality
+- **Limited audit trails** — Couldn't query historical license changes without vendor support
+
+The decision: **Build an in-house license manager** that gives Quark full control over licensing logic and eliminates recurring vendor costs.
+
+## Solution: In-House Multi-Tenant License Manager
+
+I designed and built a microservice that handles:
+1. **Feature management** — Define what features exist in the platform
+2. **License assignment** — Grant features to specific tenants with expiration, usage quotas
+3. **Privilege resolution** — Determine what actions a user can perform based on their tenant's licenses
+4. **Audit logging** — Track all license changes for compliance and debugging
+
+**Result**: Vendor eliminated. **Per-tenant costs removed**. Custom enterprise licensing logic fully supported.
+
+**Recognition**: **Employee of the Quarter** for this delivery.
+
+## Technical Architecture
+
+### Tech Stack
+- **Java** + **Spring Boot** (microservice foundation)
+- **Spring Data JPA** (ORM for database access)
+- **PostgreSQL** (relational data model)
+- **Docker** (containerized deployment)
+- **REST APIs** (integration with platform services)
+
+### Data Model: The Hard Part
+
+Multi-tenant licensing has a deceptively complex data model. Requirements:
+- A **feature** (e.g., "Advanced Analytics") can be available to Tenant A but not Tenant B
+- Within Tenant A, the feature might be available to **Admin users** but not regular users
+- Features can have **expiration dates** ("Trial expires in 30 days")
+- Features can have **usage quotas** ("100 API calls per month")
+- Features can be **hierarchical** (e.g., "AI Features" is a bundle containing "AI Document Structuring" and "AI Content Generation")
+
+Early iterations modeled this as flat role-based flags:
+```
+tenant_features:
+  tenant_id | feature_id | enabled (boolean)
+```
+
+This breaks for:
+- Time-based licenses (trials, expiration)
+- Quota enforcement (usage counts)
+- Role-based feature access within a tenant
+- Feature bundling
+
+### The Hierarchical Permission Graph
+
+I modeled licenses as a **hierarchical permission graph** instead of flat flags:
+
+```
+License
+  ├─ tenant_id (FK to tenants table)
+  ├─ feature_id (FK to features table)
+  ├─ granted_at (timestamp)
+  ├─ expires_at (nullable timestamp)
+  ├─ usage_quota (nullable integer)
+  ├─ usage_count (current usage)
+  └─ privilege_rules (JSONB: role-based conditions)
+```
+
+**Features table** supports hierarchy:
+```
+Feature
+  ├─ feature_id (PK)
+  ├─ name ("AI Features")
+  ├─ parent_feature_id (nullable FK: self-reference for bundling)
+  ├─ description
+  └─ default_enabled (boolean: new tenants get this by default?)
+```
+
+**Privilege resolution algorithm**:
+1. Lookup user's tenant
+2. Fetch all active licenses for that tenant (not expired, under quota)
+3. Resolve feature hierarchy (if tenant has "AI Features", they have all child features)
+4. Apply role-based rules (e.g., "Advanced Analytics" requires Admin role)
+5. Cache result with TTL (to avoid repeated DB queries)
+
+### Core Service Endpoints
+
+**License Management (Admin)**
+- `POST /licenses` — Grant a feature to a tenant
+- `DELETE /licenses/{id}` — Revoke a license
+- `PATCH /licenses/{id}` — Extend expiration or quota
+- `GET /licenses?tenant_id=X` — List all licenses for a tenant
+
+**Privilege Resolution (All Services)**
+- `GET /can-access?tenant_id=X&feature=Y&user_role=Z` → `{ "allowed": true/false }`
+- `GET /tenant-features?tenant_id=X` → List all active features for tenant
+
+**Audit & Analytics**
+- `GET /audit-log?tenant_id=X` — Historical license changes
+- `GET /usage-stats?feature=Y` — Feature adoption metrics
+
+## Engineering Challenges
+
+### Challenge 1: Handling License Expiration Without Cron Jobs
+**Problem**: Licenses expire at specific timestamps. How to enforce expiration without constantly polling the database?
+
+**Solution**: 
+- Expiration is **lazy-evaluated** during privilege checks
+- Query filters: `WHERE expires_at IS NULL OR expires_at > NOW()`
+- Nightly cleanup job archives expired licenses (for audit trail), but enforcement doesn't depend on it
+- If cleanup job fails, privilege checks still correctly deny access to expired licenses
+
+### Challenge 2: Caching Without Stale Data
+**Problem**: Privilege checks happen on every API request. Direct DB queries would add unacceptable latency. But licenses can change (admin revokes feature), and caches can go stale.
+
+**Solution**:
+- **Redis cache** with TTL (30 seconds)
+- Cache key: `license:tenant:{tenant_id}:feature:{feature_id}:role:{role}`
+- On license modification (grant/revoke), invalidate cache for affected tenant
+- Even if invalidation fails, worst case is 30-second stale data (acceptable for license checks)
+
+### Challenge 3: Quota Enforcement Without Race Conditions
+**Problem**: Feature has usage quota (e.g., "100 AI document processing calls/month"). Multiple concurrent requests could exceed quota due to race conditions.
+
+**Solution**:
+- **Atomic increment** in PostgreSQL: `UPDATE licenses SET usage_count = usage_count + 1 WHERE license_id = ? AND usage_count < usage_quota`
+- Check `rowsAffected` — if 0, quota exceeded
+- Use database-level constraint rather than application-level check-then-increment (which has race window)
+
+### Challenge 4: Feature Hierarchy Performance
+**Problem**: Resolving feature bundles (parent-child relationships) requires recursive queries. Can get slow for deep hierarchies.
+
+**Solution**:
+- Limit hierarchy depth to 3 levels (enforced at feature creation)
+- Use PostgreSQL **recursive CTEs** for hierarchy traversal:
+```sql
+WITH RECURSIVE feature_tree AS (
+  SELECT feature_id FROM features WHERE feature_id = ?
+  UNION
+  SELECT f.feature_id FROM features f
+  INNER JOIN feature_tree ft ON f.parent_feature_id = ft.feature_id
+)
+SELECT * FROM feature_tree;
+```
+- Cache resolved hierarchies (they rarely change)
+
+### Challenge 5: Multi-Tenant Isolation
+**Problem**: Must ensure Tenant A can't access Tenant B's license information.
+
+**Solution**:
+- All license queries include `tenant_id` in WHERE clause
+- API authentication provides `tenant_id` from user session
+- Attempting to query `tenant_id` not owned by authenticated user returns 403 Forbidden
+- Automated tests verify isolation (test user A cannot see tenant B's licenses)
+
+## Migration Strategy: Zero-Downtime Vendor Replacement
+
+Replacing Nalperion without breaking production required careful orchestration:
+
+### Phase 1: Parallel Running (2 weeks)
+- New license manager deployed alongside Nalperion
+- All license grants/revokes written to **both** systems
+- Privilege checks still query Nalperion (old system is source of truth)
+- Monitor for discrepancies between systems
+
+### Phase 2: Shadow Traffic (1 week)
+- Privilege checks query **both** systems
+- Use Nalperion's response for actual decision
+- Compare responses and log mismatches
+- Fix discrepancies in new system until 100% match
+
+### Phase 3: Cutover (1 day)
+- Switch privilege checks to new system
+- Nalperion calls removed from codebase
+- Keep Nalperion license data as read-only backup for 30 days
+- Monitor error rates and latency
+
+**Result**: Zero downtime. No user-visible changes. Vendor eliminated.
+
+## Impact & Results
+
+### Cost Savings
+- Eliminated **per-tenant licensing fees** (exact amount confidential, but significant)
+- Reduced external API latency from 50-100ms to <5ms (in-memory cache)
+- Freed budget for other engineering priorities
+
+### Business Flexibility
+- Custom enterprise deals now fully supported ("Give Tenant X Feature Y for 6-month trial, then auto-downgrade")
+- Sales team can negotiate non-standard licensing terms without vendor approval
+- New feature launches no longer blocked on vendor integration
+
+### Engineering Quality
+- **Full audit trail** of all license changes (compliance requirement for enterprise clients)
+- **Sub-5ms privilege checks** (99th percentile)
+- **Zero outages** related to licensing since launch
+- **Extensibility** — Adding new features is now just a database insert
+
+### Recognition
+- **Employee of the Quarter** for delivery
+- Became the reference architecture for "build vs buy" decisions at Quark
+
+## Design Decisions
+
+**Why PostgreSQL instead of a NoSQL database?**  
+License relationships are inherently relational (tenants → licenses → features). PostgreSQL's foreign keys, transactions, and recursive CTEs are perfect for this domain. NoSQL would require manual relationship management.
+
+**Why hierarchical model instead of flat flags?**  
+Flat flags don't scale. With 50+ features and 100+ tenants, you'd have 5,000+ records. Hierarchical bundling (e.g., "AI Features" includes 5 sub-features) keeps the model manageable.
+
+**Why lazy expiration instead of cron-based cleanup?**  
+Cron jobs can fail. If the nightly cleanup doesn't run, you don't want expired licenses to remain active. Lazy evaluation ensures expiration is **always** enforced, regardless of background job status.
+
+**Why 30-second cache TTL?**  
+Shorter TTL (1 second) means excessive DB load. Longer TTL (5 minutes) means admins revoking a license have to wait too long for it to take effect. 30 seconds balances load and freshness.
+
+## Lessons Learned
+
+**Build vs Buy isn't always obvious.**  
+Initially, replacing a vendor seemed risky. But the flexibility gained and cost savings justified the investment. The key was careful migration planning (parallel running, shadow traffic) to reduce risk.
+
+**Data model is 80% of the work.**  
+The actual service code (REST endpoints, caching, DB queries) was straightforward. The hard part was designing a data model that handles feature hierarchies, expiration, quotas, and role-based access without collapsing into complexity.
+
+**Migrations are as important as code.**  
+The parallel-running phase caught discrepancies I wouldn't have found in testing. Shadow traffic validated correctness under real load. Skipping these steps would have risked production breaks.
+
+**Caching is mandatory for privilege checks.**  
+Early versions hit the database on every API request. Latency was unacceptable. Redis caching with invalidation-on-change was the only viable solution.
+
+---
+
+**Key Takeaway**: This project demonstrates my ability to **own greenfield infrastructure from design to production**. The license manager has processed billions of privilege checks without downtime, enabled custom enterprise deals that weren't feasible before, and eliminated a recurring cost center. It's the kind of foundational service that becomes invisible when it works — which is exactly the goal.

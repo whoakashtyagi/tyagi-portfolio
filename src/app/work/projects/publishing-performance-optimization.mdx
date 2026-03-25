@@ -1,0 +1,266 @@
+---
+title: "3× Publishing Performance via Caching & Batch APIs"
+publishedAt: "2023-11-20"
+summary: "Improved document publishing speed by 3× through JProfiler-driven analysis, implementing LRU caching for S3 blobs and redesigning inter-service APIs for batch fetching."
+images:
+  - "/images/projects/publishing-performance-optimization/cover-01.jpg"
+team:
+  - name: "Akash Tyagi"
+    role: "Software Engineer I"
+    avatar: "/images/avatar.png"
+    linkedIn: "https://www.linkedin.com/in/akashtyagi21/"
+---
+
+## The Problem
+
+Quark's document publishing pipeline was **too slow** for large documents:
+- **Simple PDFs** (50-100 pages): 30-45 seconds
+- **Complex documents** (500+ pages with images): 5-10 minutes
+
+Enterprise clients publishing regulatory documents or technical manuals were hitting timeouts. Support tickets complained about "publishing hangs" and "unresponsive UI."
+
+**Root cause unknown.** The publishing service had existed for years, with features added incrementally. No one knew where the bottleneck was.
+
+## Investigation: Profiling-Driven Performance Analysis
+
+Before writing any fix code, I needed to **understand where time was going**.
+
+### Profiling Setup
+- **Tool**: JProfiler (Java profiling tool)
+- **Environment**: Staging with production-like data
+- **Test Case**: Publishing a 300-page technical manual (typical enterprise doc)
+- **Instrumentation**: CPU profiling + memory snapshots
+
+### What the Profiler Showed
+
+**Wall-clock breakdown** for a 300-second publishing job:
+```
+┌────────────────────────────────────────┐
+│  S3 Blob Reads: 120 seconds (40%)      │  ← Repeated S3 GET requests
+│  Inter-Service Data Fetch: 90s (30%)   │  ← Call-by-call REST calls
+│  Rendering Engine: 60 seconds (20%)    │  ← Actual PDF generation
+│  Other: 30 seconds (10%)               │  ← DB queries, logging, etc.
+└────────────────────────────────────────┘
+```
+
+**Two compounding bottlenecks identified:**
+
+### Bottleneck 1: Repeated S3 Blob Reads
+- Documents reference **assets** (images, stylesheets, fonts) stored in S3
+- The same asset is often reused across pages (e.g., company logo on every page header)
+- Current implementation: **Fetch from S3 every time** asset is needed
+- For a logo used on 300 pages: **300 identical S3 GET requests**
+
+**Cost**: Not just latency — AWS bills per API call. Repeated fetches were expensive.
+
+### Bottleneck 2: Call-by-Call Inter-Service Data Retrieval
+- Publishing service needs metadata from **Asset Service** (image dimensions, alt text, etc.)
+- Current implementation: **REST call per asset**
+```java
+for (Asset asset : document.getAssets()) {
+  AssetMetadata metadata = assetServiceClient.getMetadata(asset.getId());
+  // Process metadata...
+}
+```
+- For a document with 200 images: **200 sequential HTTP calls**
+- Each call: ~50ms network latency + 20ms service processing = **70ms × 200 = 14 seconds**
+
+**No actual computation happening** — just waiting on network round-trips.
+
+## Solution 1: LRU Caching for S3 Blobs
+
+Implemented an **LRU (Least Recently Used) cache** for S3 blob reads:
+
+### Design
+- **In-memory cache** (using Caffeine library)
+- **Cache key**: `s3://{bucket}/{key}`
+- **Cache value**: Byte array (blob content)
+- **Eviction policy**: LRU with fixed size (configurable, default: 500 MB)
+- **TTL**: 1 hour (S3 objects rarely change during a publishing job)
+
+### Implementation
+```java
+@Service
+public class S3BlobService {
+  private final LoadingCache<String, byte[]> blobCache;
+  
+  public S3BlobService(AmazonS3 s3Client) {
+    this.blobCache = Caffeine.newBuilder()
+      .maximumSize(500_000_000) // 500 MB
+      .expireAfterWrite(Duration.ofHours(1))
+      .build(key -> fetchFromS3(s3Client, key));
+  }
+  
+  public byte[] getBlob(String s3Uri) {
+    return blobCache.get(s3Uri);
+  }
+  
+  private byte[] fetchFromS3(AmazonS3 client, String uri) {
+    // Parse s3://{bucket}/{key}
+    S3Object object = client.getObject(bucket, key);
+    return IOUtils.toByteArray(object.getObjectContent());
+  }
+}
+```
+
+### Results
+- **Cache hit rate**: **85%+** for typical publishing jobs
+- S3 API calls reduced from ~1,000/job to ~150/job
+- S3 latency contribution dropped from 120s to <20s
+
+### Cache Invalidation
+**Problem**: What if an asset is updated in S3 during a publishing job?
+
+**Solution**: Publishing jobs are **immutable** — the asset set is locked when the job starts. Assets aren't modified mid-job, so stale cache is not a risk. For manual asset updates, cache TTL (1 hour) is acceptable.
+
+## Solution 2: Batch API for Inter-Service Data Fetch
+
+Redesigned Asset Service API to support **batch fetching**:
+
+### Before: Call-by-Call
+```java
+for (Asset asset : assets) {
+  AssetMetadata metadata = assetServiceClient.getMetadata(asset.getId());
+  // 200 assets = 200 HTTP calls = 14 seconds
+}
+```
+
+### After: Batch Fetch
+```java
+List<Long> assetIds = assets.stream()
+  .map(Asset::getId)
+  .collect(Collectors.toList());
+
+Map<Long, AssetMetadata> metadataMap = 
+  assetServiceClient.getMetadataBatch(assetIds);
+// 200 assets = 1 HTTP call = 150 ms
+```
+
+### Asset Service Implementation
+```java
+@PostMapping("/metadata/batch")
+public Map<Long, AssetMetadata> getMetadataBatch(@RequestBody List<Long> assetIds) {
+  // Single database query with WHERE id IN (...)
+  List<AssetMetadata> metadataList = assetRepository.findAllById(assetIds);
+  
+  return metadataList.stream()
+    .collect(Collectors.toMap(
+      AssetMetadata::getId,
+      metadata -> metadata
+    ));
+}
+```
+
+**Database query optimization**: `SELECT * FROM assets WHERE id IN (?, ?, ..., ?)` is dramatically faster than 200 individual queries.
+
+### Results
+- Inter-service data fetch time: **90 seconds → 5 seconds**
+- Network round-trips: **200 → 1**
+- Database queries: **200 → 1**
+
+## Combined Impact: 3× Performance Improvement
+
+**Before optimization**:
+- 300-page document: **~300 seconds** (5 minutes)
+- S3 reads: 120s | Inter-service fetch: 90s | Rendering: 60s | Other: 30s
+
+**After optimization**:
+- 300-page document: **~100 seconds** (1.6 minutes)
+- S3 reads: 20s (cached) | Inter-service fetch: 5s (batch API) | Rendering: 60s | Other: 15s
+
+**Performance improvement**: **3× faster**  
+**Cost reduction**: ~85% fewer S3 API calls = ~85% less AWS cost for S3 operations
+
+## Engineering Challenges
+
+### Challenge 1: Cache Memory Management
+**Problem**: In-memory cache can grow unbounded if document references thousands of unique assets.
+
+**Solution**: 
+- **Size-based eviction** (LRU with 500 MB cap)
+- Monitor cache hit rates and adjust size if needed
+- For extremely large jobs (rare), cache might evict hot items — acceptable trade-off vs. disk-based cache complexity
+
+### Challenge 2: Batch API Request Size Limits
+**Problem**: What if a document references 10,000 assets? Batch request becomes huge.
+
+**Solution**:
+- **Chunk batch requests** into max 500 IDs per call
+```java
+List<List<Long>> batches = Lists.partition(assetIds, 500);
+Map<Long, AssetMetadata> allMetadata = new HashMap<>();
+
+for (List<Long> batch : batches) {
+  allMetadata.putAll(assetServiceClient.getMetadataBatch(batch));
+}
+```
+- HTTP request size stays manageable
+- Still dramatically better than call-by-call (10,000 calls → 20 batch calls)
+
+### Challenge 3: Backward Compatibility
+**Problem**: Other services might depend on the old `/metadata/{id}` endpoint. Can't just delete it.
+
+**Solution**:
+- **Keep both endpoints** (single-fetch and batch-fetch)
+- Deprecate single-fetch with warning logs
+- Gradually migrate callers to batch API
+- Decommission single-fetch after 6 months (once all callers migrated)
+
+### Challenge 4: Cache Warming
+**Problem**: First job of the day has 0% cache hit rate (cold cache). Still slow.
+
+**Solution**: 
+- **Pre-warm cache** with frequently used assets (company logos, standard stylesheets)
+- Cache warming happens on service startup
+- For fresh jobs with unique assets, accept the first-job penalty (still better than no cache)
+
+## Validation & Monitoring
+
+### Performance Testing
+- Ran 100+ publishing jobs in staging before production deployment
+- Compared timings for identical documents (before/after optimization)
+- Verified **3× improvement** consistent across document types
+
+### Production Monitoring
+- **CloudWatch metrics** for S3 cache hit rate (target: >80%)
+- **Latency histograms** for publishing jobs (p50, p95, p99)
+- **S3 API call volume** (should drop 85% after deployment)
+- **Error rates** (ensure cache doesn't introduce failures)
+
+### Results Post-Deployment
+- **No user-reported issues** (transparent optimization)
+- **Support tickets** about slow publishing dropped 90%
+- **Average publishing time**: 5 minutes → 1.5 minutes (for typical enterprise doc)
+- **S3 costs**: Reduced by ~85% for publishing-related API calls
+
+## Design Decisions
+
+**Why in-memory cache instead of Redis?**  
+In-memory is simpler and faster (no network hop). Publishing service runs multiple instances, but cache doesn't need to be shared across instances (each has its own cache). Acceptable duplication for the simplicity gain.
+
+**Why LRU instead of LFU (Least Frequently Used)?**  
+LRU is simpler and works well for publishing jobs, which are short-lived. An asset used in one job is unlikely to be reused in the next job (different clients, different documents). LFU would optimize for global frequency, but we care about per-job frequency.
+
+**Why batch API instead of GraphQL?**  
+Batch API is simpler for this specific use case (fetch metadata for N assets). GraphQL would add complexity without clear benefit. If Asset Service had more complex query patterns, GraphQL might make sense.
+
+**Why not optimize the rendering engine?**  
+Rendering (PDF generation) is CPU-bound and inherently slow. The low-hanging fruit was network and I/O bottlenecks. Rendering optimizations would require re-architecting the rendering pipeline (not in scope for this effort).
+
+## Lessons Learned
+
+**Profile before optimizing.**  
+Without JProfiler, I would have guessed the rendering engine was the bottleneck. I would have wasted time optimizing the wrong layer. Data-driven investigation was essential.
+
+**80/20 rule applies to performance.**  
+Two changes (S3 caching + batch API) eliminated 70% of total latency. The remaining 30% would require diminishing-returns optimizations.
+
+**Caching is a superpower for I/O-bound workloads.**  
+85%+ cache hit rate means 85% of S3 latency just... disappears. For workloads with repeated reads, caching is mandatory.
+
+**Batch APIs reduce network round-trips.**  
+The performance gain isn't the database query (marginally faster) — it's the elimination of 199 network round-trips. Latency dominates computation time in distributed systems.
+
+---
+
+**Key Takeaway**: This project demonstrates my approach to performance optimization: **profile first, optimize the critical path, measure results**. The 3× improvement was achieved not through clever algorithms, but by eliminating unnecessary network and I/O overhead. It's the kind of systems-level thinking that translates across languages and frameworks — the bottleneck is rarely the code, it's how the system communicates with external services.

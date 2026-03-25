@@ -1,0 +1,300 @@
+---
+title: "Enterprise SSO Migration with Keycloak"
+publishedAt: "2024-10-15"
+summary: "Led platform-wide migration to Keycloak SSO with OAuth 2.0 and SAML support, achieving zero-downtime cutover across 6+ services. Employee of the Quarter recognition."
+images:
+  - "/images/projects/keycloak-sso-migration/cover-01.jpg"
+team:
+  - name: "Akash Tyagi"
+    role: "Software Engineer II"
+    avatar: "/images/avatar.png"
+    linkedIn: "https://www.linkedin.com/in/akashtyagi21/"
+---
+
+## The Problem
+
+Quark's platform was using **per-service database authentication** — each microservice maintained its own user table and authentication logic. This architecture had accumulated significant technical debt:
+
+### Security Issues
+- **No centralized user management** — Provisioning a new user required updating multiple databases
+- **Inconsistent password policies** — Each service enforced different complexity requirements
+- **No MFA support** — Multi-factor authentication wasn't feasible without centralized identity
+- **Credential storage** — Passwords stored with varying hashing algorithms (bcrypt, PBKDF2, even some MD5)
+- **No audit trail** — Couldn't track "who logged in where" across services
+
+### Operational Pain Points
+- **User lockouts** — Failed logins in Service A didn't propagate to Service B
+- **Password resets** — Required updating each service's database individually
+- **SSO impossible** — Enterprise clients requested SAML-based SSO, but per-service auth couldn't support it
+- **Compliance risk** — Fragmented auth made SOC 2 and GDPR compliance difficult to demonstrate
+
+The decision: **Migrate to centralized identity** with Keycloak as the SSO provider.
+
+## Solution: Zero-Downtime Keycloak Migration
+
+I led the migration to **Keycloak** with:
+- **OAuth 2.0** for API authentication
+- **SAML 2.0** for enterprise SSO
+- **Zero downtime** for active users
+- **Encrypted credential migration** from legacy databases
+- **MFA rollout** post-migration
+
+**Challenge**: **6+ microservices**, **thousands of active users**, and a requirement for **no user disruption**. Users couldn't be forced to reset passwords or re-authenticate.
+
+**Recognition**: **Employee of the Quarter** for this delivery.
+
+## Technical Architecture
+
+### Tech Stack
+- **Keycloak** (open-source identity and access management)
+- **OAuth 2.0** (token-based authentication for APIs)
+- **SAML 2.0** (enterprise SSO integration)
+- **Java** + **Spring Security** (service-side integration)
+- **PostgreSQL** (Keycloak's user store)
+- **Docker** (Keycloak deployment)
+
+### Keycloak Setup
+- **Realm**: `quark-platform`
+- **Client Configurations**: Each microservice is a registered OAuth client
+- **User Federation**: Migrated users from legacy databases
+- **Identity Providers**: SAML connectors for enterprise SSO
+- **MFA**: TOTP-based (Google Authenticator, Authy)
+
+### Service Integration Pattern
+
+**Before Migration** (Per-Service Auth):
+```
+User → Login Form → Service Auth Endpoint
+    ↓
+Query service's user table
+    ↓
+Verify password hash (bcrypt/PBKDF2)
+    ↓
+Return session token (service-specific)
+```
+
+**After Migration** (Keycloak SSO):
+```
+User → Login Form → Keycloak
+    ↓
+OAuth 2.0 / SAML authentication
+    ↓
+Return JWT (signed by Keycloak)
+    ↓
+Service validates JWT signature
+    ↓
+Extract user identity, authorize request
+```
+
+**Key Difference**: Services no longer manage passwords. They only **validate JWTs** issued by Keycloak.
+
+## Migration Strategy: The Parallel Auth Period
+
+Forcing users to reset passwords or re-authenticate would cause support chaos. The migration needed to be **transparent**.
+
+### Phase 1: Keycloak Setup & User Migration (2 weeks)
+1. Deploy Keycloak in staging and production
+2. Export users from legacy databases (6 services × ~10k users ea.)
+3. Migrate to Keycloak with **password hashes intact**
+   - Keycloak supports importing bcrypt/PBKDF2 hashes directly
+   - Users can log in with existing passwords without resets
+4. Configure OAuth clients for each service
+
+### Phase 2: Parallel Authentication (4 weeks)
+Services accept **both** legacy sessions and Keycloak JWTs:
+
+```java
+@Component
+public class DualAuthFilter extends OncePerRequestFilter {
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, ...) {
+    String legacySessionToken = request.getCookie("SESSION_TOKEN");
+    String keycloakJWT = request.getHeader("Authorization");
+    
+    if (keycloakJWT != null && isValidJWT(keycloakJWT)) {
+      // New path: Keycloak JWT
+      setAuthenticationContext(extractUserFromJWT(keycloakJWT));
+    } else if (legacySessionToken != null && isValidLegacySession(legacySessionToken)) {
+      // Old path: Legacy session (database lookup)
+      setAuthenticationContext(loadUserFromDatabase(legacySessionToken));
+    } else {
+      // Not authenticated
+      throw new UnauthorizedException();
+    }
+  }
+}
+```
+
+**Why parallel auth matters**:
+- Users with **existing sessions** continue working without interruption
+- New logins go through **Keycloak**
+- Old sessions **expire naturally** over 7-30 days (depending on session TTL)
+- No forced logouts
+
+### Phase 3: Traffic Cutover (2 weeks)
+1. Update login forms to redirect to Keycloak (OAuth flow)
+2. Monitor error rates — if Keycloak is down, fall back to legacy auth temporarily
+3. Gradually reduce legacy session TTL (from 30 days → 7 days → 1 day)
+4. Communications to users: "If you haven't logged in recently, you may see a new login screen"
+
+### Phase 4: Legacy Decommission (2 weeks)
+1. Remove legacy auth paths from services
+2. Drop user tables from service databases (after backup)
+3. Archive legacy session tokens for audit compliance
+4. Monitor for any residual legacy auth attempts (should be zero)
+
+**Total Migration Duration**: 10 weeks from kickoff to legacy decommission.
+
+## Engineering Challenges
+
+### Challenge 1: Encrypted Credential Migration
+**Problem**: User passwords are hashed in legacy databases. How to migrate without forcing resets?
+
+**Solution**:
+- Keycloak supports **importing password hashes** (bcrypt, PBKDF2, etc.)
+- Export users with hashes intact
+- Keycloak validates logins against imported hashes
+- On first successful login, Keycloak rehashes password with its own settings
+- Users never know migration happened
+
+### Challenge 2: Session Hijacking Prevention
+**Problem**: Parallel auth period means both legacy tokens and JWTs are valid. Risk of session fixation attacks.
+
+**Solution**:
+- Legacy tokens **cannot** be used to obtain Keycloak JWTs
+- JWTs are **signed** — services validate signature with Keycloak's public key
+- Legacy sessions have **short TTL** during transition
+- MFA required for privileged actions (even with valid session)
+
+### Challenge 3: Service-to-Service Authentication
+**Problem**: Not just user logins — services call each other's APIs (e.g., Content Service → Asset Service). How to authenticate service-to-service calls?
+
+**Solution**:
+- **Client Credentials Flow** (OAuth 2.0)
+- Each service has a Keycloak client with `client_id` and `client_secret`
+- Service requests a token: `POST /token` with client credentials
+- Use token for API calls to other services
+- Tokens are short-lived (15 minutes), automatically refreshed
+
+### Challenge 4: SAML Enterprise SSO
+**Problem**: Enterprise clients use SAML-based identity providers (Okta, Azure AD). How to integrate?
+
+**Solution**:
+- Keycloak acts as **SAML Service Provider (SP)**
+- Enterprise IdP (e.g., Okta) is configured as **Identity Provider (IdP)**
+- User logs in via their corporate SSO
+- Keycloak receives SAML assertion, issues JWT
+- User has seamless experience (corporate credentials work on Quark platform)
+
+**Rollout**: Enabled for 3 pilot enterprise clients during parallel auth period, then expanded.
+
+### Challenge 5: Rollback Plan
+**Problem**: If Keycloak has issues, how to revert without downtime?
+
+**Solution**:
+- During parallel auth, **legacy path still works**
+- If Keycloak is unreachable, services fall back to legacy auth automatically
+- Feature flag controls Keycloak usage: `keycloak.enabled=true/false`
+- Tested rollback in staging — can disable Keycloak with zero downtime
+
+(Rollback was never needed in production.)
+
+## MFA Rollout: Post-Migration Enhancement
+
+After migration completed, added **Multi-Factor Authentication**:
+
+### Implementation
+- **TOTP-based** (Time-based One-Time Password)
+- Users enroll via QR code (Google Authenticator, Authy, etc.)
+- Enforced for privileged actions (publishing, user management)
+- Optional for regular users (encouraged but not mandatory)
+
+### Adoption
+- **Mandatory for admins** (100% adoption)
+- **Opt-in for regular users** (~40% adoption)
+- **Enterprise SSO users** rely on their IdP's MFA (e.g., Okta enforces it)
+
+**Security Improvement**: Eliminated several classes of attacks (credential stuffing, phishing).
+
+## Cross-Team Coordination: The Non-Technical Challenge
+
+The hardest part wasn't the code — it was **coordinating across 6+ teams**:
+
+### Challenges
+- Each service had different auth implementations (custom filters, frameworks)
+- Teams had different release schedules
+- Some services had active development that couldn't be paused
+- QA needed to test every service during parallel auth period
+
+### Solutions
+- **Weekly sync meetings** with all service teams
+- **Shared migration playbook** (step-by-step guide for each service)
+- **Integration testing** in shared staging environment
+- **Gradual rollout** (one service at a time, not big-bang)
+- **Dedicated Slack channel** for real-time debugging
+
+**Communication to Clients**:
+- Advance notice via email and in-app banners
+- Support team trained on new login flows
+- FAQ document for common questions
+
+Result: Zero user-facing incidents. Support ticket volume remained normal.
+
+## Impact & Results
+
+### Security Improvements
+- **Centralized identity** with consistent password policies
+- **MFA support** for sensitive actions
+- **Encrypted credential storage** (Keycloak uses bcrypt with high work factor)
+- **Audit trail** for all authentication events
+- **SAML SSO** for enterprise clients (compliance requirement for some)
+
+### Operational Improvements
+- **Single user database** (Keycloak) replaces 6+ per-service databases
+- **Password resets** centralized (one API, not six database updates)
+- **User provisioning** simplified (create user once in Keycloak, access all services)
+- **Session management** transparent across services
+
+### Performance
+- **JWT validation** faster than database lookups (<5ms vs 20-50ms)
+- **Reduced database load** (no auth queries per request)
+- **Token caching** with public key validation (no Keycloak roundtrip per request)
+
+### Recognition
+- **Employee of the Quarter** for leading the migration
+- Became **reference architecture** for future cross-service initiatives
+
+## Design Decisions
+
+**Why Keycloak instead of Auth0 or Okta?**  
+- **Open-source** (no per-user licensing fees)
+- **Self-hosted** (data sovereignty for enterprise clients)
+- **Full control** over customization and configuration
+- **Active community** and mature feature set
+
+**Why parallel auth instead of forced re-authentication?**  
+Forced re-auth would have massively disrupted users. The parallel period allowed natural session expiration, reducing support load to near zero.
+
+**Why JWT instead of opaque tokens?**  
+JWTs are **self-contained** (services validate locally without calling Keycloak). This reduces latency and Keycloak load. Trade-off: can't revoke JWTs before expiration (mitigated by short TTL: 15 minutes).
+
+**Why OAuth 2.0 for APIs and SAML for enterprise SSO?**  
+OAuth 2.0 is modern and well-suited for API authentication. SAML is legacy but required for enterprise clients (many use Okta/Azure AD with SAML).
+
+## Lessons Learned
+
+**Migration complexity is non-linear.**  
+Migrating 1 service is easy. Migrating 6 services is not 6× harder — it's 20× harder due to coordination overhead.
+
+**Parallel systems reduce risk.**  
+Being able to run old and new auth simultaneously was critical. It provided a safety net during rollout.
+
+**Communication > Code.**  
+More time spent on coordination meetings, documentation, and user communication than writing code. Cross-team migrations live or die on communication.
+
+**Rollback plans reduce anxiety.**  
+Knowing we could disable Keycloak with a feature flag gave teams confidence to proceed. (Even though we never used it.)
+
+---
+
+**Key Takeaway**: This project demonstrates my ability to **lead complex, cross-team infrastructure migrations** with zero downtime. The parallel auth strategy eliminated user disruption, and the gradual rollout minimized risk. The migration has been running for 1.5+ years with zero security incidents and has enabled enterprise SSO deals that weren't feasible before.

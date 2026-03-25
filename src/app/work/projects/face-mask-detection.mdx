@@ -1,0 +1,304 @@
+---
+title: "Real-Time Face Mask Detection with Transfer Learning"
+publishedAt: "2021-08-10"
+summary: "Built a real-time face mask detection system using transfer learning on MobileNetV2. My first serious Python and machine learning project — deployed for CCTV camera feeds during COVID-19."
+images:
+  - "/images/projects/face-mask-detection/cover-01.jpg"
+team:
+  - name: "Akash Tyagi"
+    role: "ML Engineer"
+    avatar: "/images/avatar.png"
+    linkedIn: "https://www.linkedin.com/in/akashtyagi21/"
+link: "https://github.com/whoakashtyagi/Face-Mask-Detection"
+---
+
+## Overview
+
+A real-time face mask detection system built during the COVID-19 pandemic (2021). The system:
+- Processes **live video frames** from webcams or CCTV cameras
+- Detects **faces** using OpenCV's Haar Cascade classifier
+- Classifies **mask vs. no-mask** using a fine-tuned MobileNetV2 model
+- Draws **bounding boxes** with labels and confidence scores
+
+**Built in Python** — which I'd never used seriously before this project. It was my first deep dive into machine learning and computer vision, and it forced me to learn an entirely new tech stack (TensorFlow, Keras, OpenCV) while shipping something functional.
+
+## The Problem
+
+In 2021, COVID-19 was peaking. Public spaces needed to **enforce mask mandates**, but manual monitoring wasn't scalable. Security personnel couldn't watch every camera feed or check every person entering a building.
+
+**Automated mask detection** could:
+- Monitor CCTV feeds in real-time
+- Alert security when people without masks are detected
+- Generate compliance reports for authorities
+- Reduce manual monitoring workload
+
+Existing solutions were either too expensive (commercial CV systems) or too inaccurate (simple template matching).
+
+## Solution: Transfer Learning on MobileNetV2
+
+### Why Transfer Learning?
+Training a CNN from scratch requires:
+- Massive datasets (millions of images)
+- Significant compute resources (GPUs for days)
+- Deep expertise in model architecture design
+
+**Transfer learning** allows you to:
+- Start with a **pre-trained model** (trained on ImageNet with 1M+ images)
+- **Fine-tune** the final layers for your specific task (mask detection)
+- Achieve good accuracy with **smaller datasets** (thousands, not millions)
+
+### Model Architecture
+
+**Base Model**: MobileNetV2 (pre-trained on ImageNet)  
+- Chosen for **inference speed** on constrained hardware (real-time video requires <50ms per frame)
+- A full ResNet would be more accurate but too slow for real-time processing
+
+**Fine-Tuning**:
+- Freeze base layers (keep ImageNet features)
+- Add custom classification head:
+  - Global Average Pooling
+  - Dense layer (128 units, ReLU)
+  - Dropout (0.5)
+  - Output layer (2 units: `with_mask`, `without_mask`, softmax)
+
+**Training**:
+- Dataset: ~3,800 images (masked and unmasked faces in varied lighting and angles)
+- Augmentation: Random rotation, zoom, horizontal flip (to improve generalization)
+- Optimizer: Adam with learning rate 0.0001
+- Loss: Categorical cross-entropy
+- Epochs: 20 (early stopping if validation loss stops improving)
+
+### System Flow
+
+```
+Webcam / CCTV Feed
+        ↓
+OpenCV Video Capture
+        ↓
+Read Frame (640×480)
+        ↓
+Face Detection (Haar Cascade)
+    ├─ No faces detected → Next frame
+    └─ Faces detected → Crop each face
+                ↓
+        Resize to 224×224 (MobileNetV2 input size)
+                ↓
+        Normalize pixel values (0-1 range)
+                ↓
+        Model Inference (MobileNetV2)
+                ↓
+        Prediction: [with_mask: 0.95, without_mask: 0.05]
+                ↓
+        Draw bounding box + label
+                ↓
+        Display annotated frame
+```
+
+**Latency**: ~30ms per frame on CPU (achieves 30 FPS for real-time processing)
+
+## Tech Stack
+
+- **Python 3.8** — First serious Python project
+- **TensorFlow 2.x / Keras** — Deep learning framework
+- **MobileNetV2** — Pre-trained model from `tf.keras.applications`
+- **OpenCV (cv2)** — Video capture, face detection, drawing bounding boxes
+- **NumPy** — Array manipulation for image preprocessing
+- **Matplotlib** — Visualizing training metrics
+
+## Implementation Highlights
+
+### 1. Data Preprocessing
+```python
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+datagen = ImageDataGenerator(
+    rescale=1./255,              # Normalize pixel values
+    rotation_range=20,           # Random rotation ±20 degrees
+    zoom_range=0.15,             # Random zoom
+    width_shift_range=0.2,       # Horizontal shift
+    height_shift_range=0.2,      # Vertical shift
+    horizontal_flip=True,        # Random horizontal flip
+    fill_mode='nearest'
+)
+
+train_generator = datagen.flow_from_directory(
+    'dataset/train',
+    target_size=(224, 224),
+    batch_size=32,
+    class_mode='categorical'
+)
+```
+
+**Why augmentation matters**: Without it, the model memorizes training images (overfits). Augmentation creates synthetic variations, improving generalization to real-world lighting, angles, and occlusions.
+
+### 2. Transfer Learning Setup
+```python
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
+from tensorflow.keras.models import Model
+
+# Load pre-trained base model
+base_model = MobileNetV2(
+    weights='imagenet',
+    include_top=False,  # Exclude original classification head
+    input_shape=(224, 224, 3)
+)
+
+# Freeze base model layers
+base_model.trainable = False
+
+# Add custom classification head
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(128, activation='relu')(x)
+x = Dropout(0.5)(x)
+predictions = Dense(2, activation='softmax')(x)  # 2 classes: with_mask, without_mask
+
+model = Model(inputs=base_model.input, outputs=predictions)
+```
+
+### 3. Real-Time Detection
+```python
+import cv2
+import numpy as np
+from tensorflow.keras.models import load_model
+
+# Load trained model
+model = load_model('mask_detector.h5')
+
+# Load face detector
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+# Start video capture
+cap = cv2.VideoCapture(0)  # 0 = default webcam
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+    
+    # Detect faces
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+    
+    for (x, y, w, h) in faces:
+        # Extract face region
+        face = frame[y:y+h, x:x+w]
+        face_resized = cv2.resize(face, (224, 224))
+        face_normalized = face_resized / 255.0
+        face_input = np.expand_dims(face_normalized, axis=0)
+        
+        # Predict
+        prediction = model.predict(face_input)
+        label = "Mask" if prediction[0][0] > 0.5 else "No Mask"
+        confidence = prediction[0][0] if label == "Mask" else prediction[0][1]
+        
+        # Draw bounding box
+        color = (0, 255, 0) if label == "Mask" else (0, 0, 255)
+        cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
+        cv2.putText(frame, f"{label} ({confidence:.2f})", (x, y-10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+    
+    # Display frame
+    cv2.imshow('Face Mask Detector', frame)
+    
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+```
+
+## Challenges & Solutions
+
+### Challenge 1: Dataset Quality
+**Problem**: Publicly available mask datasets had biased samples (mostly young adults, good lighting, frontal faces).
+
+**Solution**: 
+- Curated custom dataset with diverse demographics
+- Included varied angles (profile, tilted heads)
+- Added low-light and occluded samples (masks covering mouth only, glasses, hats)
+- Resulted in ~3,800 images total
+
+### Challenge 2: Model Selection — Accuracy vs. Speed
+**Problem**: ResNet50 achieved 98% accuracy but took ~150ms per frame (too slow for real-time). MobileNetV2 was faster but initially 92% accurate.
+
+**Solution**: 
+- Chose **MobileNetV2** for inference speed (<50ms)
+- Improved accuracy through **data augmentation** and **fine-tuning hyperparameters**
+- Final accuracy: **95%** (acceptable trade-off for real-time performance)
+
+**Key Insight**: In production CV systems, **latency matters as much as accuracy**. A 98% accurate model that processes 5 FPS is less useful than a 95% accurate model at 30 FPS.
+
+### Challenge 3: False Positives on Partially Covered Faces
+**Problem**: Masks worn incorrectly (under nose) were sometimes classified as "with mask."
+
+**Solution**: 
+- Added training samples of **incorrectly worn masks** labeled as "without_mask"
+- Improved model's ability to detect proper mask coverage
+- Not perfect, but reduced false positives significantly
+
+### Challenge 4: Face Detection Failures
+**Problem**: Haar Cascade struggles with:
+- Side profiles (detects frontal faces best)
+- Occlusions (hats, scarves blocking forehead)
+- Extreme lighting (backlighting, shadows)
+
+**Solution**: 
+- Tuned `scaleFactor` and `minNeighbors` parameters for better detection
+- Considered switching to **DNN-based face detectors** (e.g., SSD with ResNet) for production deployment
+- Trade-off: DNN detectors are more accurate but slower (would reduce FPS)
+
+## Results & Metrics
+
+### Model Performance
+- **Training Accuracy**: 98%
+- **Validation Accuracy**: 95%
+- **Test Accuracy**: 94% (on held-out test set with unseen faces)
+- **Inference Time**: ~30ms per frame (CPU) → **30 FPS**
+
+### Real-World Testing
+- Tested with webcam on 20+ people in varied lighting
+- **True Positive Rate** (mask detected when present): ~93%
+- **True Negative Rate** (no mask detected when absent): ~96%
+- **False Positives**: Mostly on incorrectly worn masks (under nose, under chin)
+
+## What I Learned
+
+**This was my first Python project beyond simple scripts.**  
+Coming from Java, Python felt alien at first (no semicolons, indentation-based structure). But I shipped a working CV system in weeks. The lesson: **language is the last mile** — understanding the problem (CV system design, model selection, latency constraints) matters more than syntax.
+
+**Accuracy vs. latency trade-offs are real.**  
+ResNet50 was more accurate but couldn't hit 30 FPS. MobileNetV2 was fast enough for real-time but needed tuning to reach acceptable accuracy. In production systems, **latency is a feature**.
+
+**Data quality > model complexity.**  
+I spent more time curating the dataset (diverse angles, lighting, demographics) than tuning hyperparameters. Good data with a simple model beats bad data with a complex model.
+
+**Transfer learning is a superpower.**  
+Training a CNN from scratch would have required 100× more data and compute. Fine-tuning MobileNetV2 took ~2 hours on a laptop GPU.
+
+**Computer vision is 50% computer science, 50% debugging weird lighting conditions.**  
+False positives were mostly due to backlighting, reflections, and occlusions. Understanding the domain (how cameras behave in real environments) was as important as understanding the model.
+
+## Deployment Context
+
+Built this during COVID-19 (2021) when mask mandates were active. The system was:
+- Tested with **webcam feeds** for proof-of-concept
+- Designed for **CCTV camera integration** (RTSP stream support)
+- Intended for deployment in **public spaces** (offices, retail, transit hubs)
+
+**Not commercialized** — it was a learning project and a portfolio piece. But it demonstrated that real-time mask detection on constrained hardware (no GPUs) was feasible.
+
+## Potential Improvements
+
+- **DNN-based face detector** (SSD, MTCNN) for better occlusion handling
+- **Multi-angle detection** (side profiles, tilted heads)
+- **Alert system** (send notifications when non-compliance detected)
+- **Deployment on edge devices** (Raspberry Pi, Jetson Nano) for scalable CCTV integration
+- **Model quantization** (TensorFlow Lite) for faster inference on mobile/embedded devices
+
+---
+
+**Key Takeaway**: This project demonstrates my ability to **learn new tech stacks quickly** (Python, TensorFlow, OpenCV from zero to shipped in weeks) and **understand trade-offs** (accuracy vs. latency, model size vs. inference speed). It's not backend work, but it shows **technical breadth** and the systems-level thinking that translates across domains. When I approach a new problem, the language is just the last mile — architectural decisions (model selection, latency constraints, deployment targets) come first.
+
+**GitHub**: [github.com/whoakashtyagi/Face-Mask-Detection](https://github.com/whoakashtyagi/Face-Mask-Detection)

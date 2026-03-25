@@ -2,20 +2,20 @@ import { About, Blog, Gallery, Home, Newsletter, Person, Social, Work } from "@/
 import { Line, Row, Text } from "@once-ui-system/core";
 
 const person: Person = {
-  firstName: "Selene",
-  lastName: "Yu",
-  name: `Selene Yu`,
-  role: "Design Engineer",
-  avatar: "/images/avatar.jpg",
-  email: "example@gmail.com",
-  location: "Asia/Jakarta", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
-  languages: ["English", "Bahasa"], // optional: Leave the array empty if you don't want to display languages
+  firstName: "Akash",
+  lastName: "Tyagi",
+  name: `Akash Tyagi`,
+  role: "Backend Engineer",
+  avatar: "/images/avatar.png",
+  email: "akashttyagi21@gmail.com",
+  location: "Asia/Kolkata", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
+  languages: ["English", "Hindi"], // optional: Leave the array empty if you don't want to display languages
 };
 
 const newsletter: Newsletter = {
-  display: true,
+  display: false,
   title: <>Subscribe to {person.firstName}'s Newsletter</>,
-  description: <>My weekly newsletter about creativity and engineering</>,
+  description: <>My weekly newsletter about backend engineering and systems design</>,
 };
 
 const social: Social = [
@@ -25,25 +25,13 @@ const social: Social = [
   {
     name: "GitHub",
     icon: "github",
-    link: "https://github.com/once-ui-system",
+    link: "https://github.com/whoakashtyagi",
     essential: true,
   },
   {
     name: "LinkedIn",
     icon: "linkedin",
-    link: "https://www.linkedin.com/company/once-ui/",
-    essential: true,
-  },
-  {
-    name: "Instagram",
-    icon: "instagram",
-    link: "https://www.instagram.com/once_ui/",
-    essential: false,
-  },
-  {
-    name: "Threads",
-    icon: "threads",
-    link: "https://www.threads.com/@once_ui",
+    link: "https://www.linkedin.com/in/akashtyagi21/",
     essential: true,
   },
   {
@@ -58,26 +46,28 @@ const home: Home = {
   path: "/",
   image: "/images/og/home.jpg",
   label: "Home",
-  title: `${person.name}'s Portfolio`,
-  description: `Portfolio website showcasing my work as a ${person.role}`,
-  headline: <>Building bridges between design and code</>,
+  title: `${person.name} – Backend Engineer`,
+  description: `Portfolio showcasing 4+ years of distributed systems, microservices, and AI integration work`,
+  headline: <>I design systems. Not just code.</>,
   featured: {
     display: true,
     title: (
       <Row gap="12" vertical="center">
-        <strong className="ml-4">Once UI</strong>{" "}
+        <strong className="ml-4">Featured Work</strong>{" "}
         <Line background="brand-alpha-strong" vert height="20" />
         <Text marginRight="4" onBackground="brand-medium">
-          Featured work
+          80% faster onboarding
         </Text>
       </Row>
     ),
-    href: "/work/building-once-ui-a-customizable-design-system",
+    href: "/work/ai-document-structuring-service",
   },
   subline: (
     <>
-    I'm Selene, a design engineer at <Text as="span" size="xl" weight="strong">ONCE UI</Text>, where I craft intuitive <br /> user experiences. After hours, I build my own projects.
-</>
+      Backend software engineer with <Text as="span" weight="strong">4+ years</Text> shipping production infrastructure at scale. <br />
+      Distributed systems, cloud-native services, and AI integrations are my home turf — but fundamentals travel. <br />
+      I pick up new languages fast because I understand what's underneath them.
+    </>
   ),
 };
 
@@ -85,7 +75,7 @@ const about: About = {
   path: "/about",
   label: "About",
   title: `About – ${person.name}`,
-  description: `Meet ${person.name}, ${person.role} from ${person.location}`,
+  description: `Meet ${person.name}, ${person.role} with 4+ years in distributed systems and AI integration`,
   tableOfContent: {
     display: true,
     subItems: false,
@@ -94,7 +84,7 @@ const about: About = {
     display: true,
   },
   calendar: {
-    display: true,
+    display: false,
     link: "https://cal.com",
   },
   intro: {
@@ -102,9 +92,18 @@ const about: About = {
     title: "Introduction",
     description: (
       <>
-        Selene is a Jakarta-based design engineer with a passion for transforming complex challenges
-        into simple, elegant design solutions. Her work spans digital interfaces, interactive
-        experiences, and the convergence of design and technology.
+        I'm a backend engineer who's spent 4+ years building enterprise SaaS at Quark — designing distributed systems, 
+        shipping microservices to production, and more recently, integrating AI into places it actually helps.
+        <br /><br />
+        I write Java daily. But I think in systems, not syntax. When I approach a new problem, the language is just the 
+        last mile — what matters first is the data model, the failure modes, the scaling path. That clarity is what lets 
+        me pick up an unfamiliar language or framework quickly, lean on LLMs as force multipliers, and still ship production-quality code.
+        <br /><br />
+        My engineering story started in electronics and communication at Punjab University — which means I've thought about 
+        signals, protocols, and hardware constraints before I ever wrote a line of Java. That background gives me a gut for 
+        systems at different layers of abstraction.
+        <br /><br />
+        I want to work on teams building hard things fast.
       </>
     ),
   },
@@ -113,41 +112,80 @@ const about: About = {
     title: "Work Experience",
     experiences: [
       {
-        company: "FLY",
-        timeframe: "2022 - Present",
-        role: "Senior Design Engineer",
+        company: "Quark Software Inc.",
+        timeframe: "Jul 2025 - Present",
+        role: "Software Specialist",
         achievements: [
           <>
-            Redesigned the UI/UX for the FLY platform, resulting in a 20% increase in user
-            engagement and 30% faster load times.
+            Built an <strong>AI-powered document structuring service</strong> using Spring AI SDK and Azure AI Document Intelligence 
+            that automatically maps legacy documents to Quark's schema, reducing new client onboarding time by <strong>80%</strong>.
           </>,
           <>
-            Spearheaded the integration of AI tools into design workflows, enabling designers to
-            iterate 50% faster.
+            Designed and shipped the <strong>Quark MCP Server</strong> — a service layer that exposes platform APIs to AI agents 
+            via Model Context Protocol, enabling LLM-based workflows to interact with the publishing platform natively.
+          </>,
+          <>
+            Own the complete SDLC for critical production issues — design documentation, root cause analysis, 
+            code review, implementation, testing, and post-deploy monitoring.
           </>,
         ],
-        images: [
-          // optional: leave the array empty if you don't want to display images
-          {
-            src: "/images/projects/project-01/cover-01.jpg",
-            alt: "Once UI Project",
-            width: 16,
-            height: 9,
-          },
-        ],
+        images: [],
       },
       {
-        company: "Creativ3",
-        timeframe: "2018 - 2022",
-        role: "Lead Designer",
+        company: "Quark Software Inc.",
+        timeframe: "Jul 2024 - Jul 2025",
+        role: "Software Engineer II",
         achievements: [
           <>
-            Developed a design system that unified the brand across multiple platforms, improving
-            design consistency by 40%.
+            Built a <strong>standardized library suite</strong> adopted by 4+ teams, reducing project kickoff times by 25–50% 
+            and enforcing consistency across service boundaries. <strong>Employee of the Quarter (×2)</strong>.
           </>,
           <>
-            Led a cross-functional team to launch a new product line, contributing to a 15% increase
-            in overall company revenue.
+            Led platform-wide <strong>SSO migration to Keycloak</strong> with OAuth 2.0 and SAML support, achieving zero-downtime 
+            cutover across 6+ services while adding MFA and encrypted credential storage. <strong>Employee of the Quarter</strong>.
+          </>,
+          <>
+            Designed and built an <strong>in-house multi-tenant license management service</strong> from scratch, replacing 
+            the third-party vendor (Nalperion) and eliminating per-tenant licensing costs. <strong>Employee of the Quarter</strong>.
+          </>,
+        ],
+        images: [],
+      },
+      {
+        company: "Quark Software Inc.",
+        timeframe: "Jul 2022 - Jul 2024",
+        role: "Software Engineer I",
+        achievements: [
+          <>
+            Improved document publishing speed by <strong>3×</strong> through JProfiler-driven performance analysis. 
+            Built an LRU caching layer for S3 blob reads (85%+ cache hit rate) and redesigned inter-service APIs to use batch fetching.
+          </>,
+          <>
+            Designed and implemented <strong>asset branching functionality</strong> — a platform-wide versioning refactor enabling 
+            content branching and merging across all services without breaking existing functionality for active clients.
+          </>,
+          <>
+            Received <strong>12+ peer bonus awards</strong> for consistent engineering contributions and cross-team collaboration.
+          </>,
+        ],
+        images: [],
+      },
+      {
+        company: "Quark Software Inc.",
+        timeframe: "Jan 2022 - Jul 2022",
+        role: "R&D Intern",
+        achievements: [
+          <>
+            Integrated <strong>DocuSign APIs and webhooks</strong> to provide built-in digital signing workflows for approved content, 
+            replacing a manual out-of-platform process.
+          </>,
+          <>
+            Added section-level preview and publishing support via a new automation channel, building XSLT transformation pipelines 
+            for real-time content rendering.
+          </>,
+          <>
+            Handled production support tickets and bug investigations — where I developed the root cause analysis discipline 
+            I still use today.
           </>,
         ],
         images: [],
@@ -156,15 +194,24 @@ const about: About = {
   },
   studies: {
     display: true, // set to false to hide this section
-    title: "Studies",
+    title: "Education & Certifications",
     institutions: [
       {
-        name: "University of Jakarta",
-        description: <>Studied software engineering.</>,
+        name: "Punjab University, Chandigarh",
+        description: <>Bachelor of Engineering in Electronics and Communication (2018-2022) • CGPA: 7.9 <br />
+        Relevant coursework: Computer Fundamentals, Operating Systems, Networking, Data Structures & Algorithms</>,
       },
       {
-        name: "Build the Future",
-        description: <>Studied online marketing and personal branding.</>,
+        name: "Microsoft Certified: Azure AI Engineer Associate",
+        description: <>Demonstrated expertise in designing and implementing AI solutions on Azure, including Azure AI Document Intelligence and Azure AI Services.</>,
+      },
+      {
+        name: "Microsoft Azure AI Essentials Professional Certificate",
+        description: <>Foundational certification in Azure AI services and machine learning.</>,
+      },
+      {
+        name: "Building Scalable Java Microservices — Google Cloud",
+        description: <>Professional certification in designing and deploying production-grade Java microservices with Spring Boot and Spring Cloud.</>,
       },
     ],
   },
@@ -173,60 +220,130 @@ const about: About = {
     title: "Technical skills",
     skills: [
       {
-        title: "Figma",
+        title: "Backend Engineering",
         description: (
-          <>Able to prototype in Figma with Once UI with unnatural speed.</>
+          <>
+            Primary language: Java (4+ years production experience). Working knowledge: Python, TypeScript/Node.js. 
+            I write Java for work, but I think in systems — data structures, algorithms, design patterns, and distributed systems principles.
+          </>
         ),
         tags: [
           {
-            name: "Figma",
-            icon: "figma",
-          },
-        ],
-        // optional: leave the array empty if you don't want to display images
-        images: [
-          {
-            src: "/images/projects/project-01/cover-02.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
+            name: "Java",
+            icon: "java",
           },
           {
-            src: "/images/projects/project-01/cover-03.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
+            name: "Python",
+            icon: "python",
+          },
+          {
+            name: "TypeScript",
+            icon: "typescript",
           },
         ],
+        images: [],
       },
       {
-        title: "Next.js",
+        title: "Spring Ecosystem & Frameworks",
         description: (
-          <>Building next gen apps with Next.js + Once UI + Supabase.</>
+          <>
+            Daily work with Spring Boot microservices. Production experience with Spring Data JPA, Spring Security, 
+            Spring MVC, and Spring AI SDK for LLM integration. JUnit for testing.
+          </>
         ),
         tags: [
           {
-            name: "JavaScript",
-            icon: "javascript",
+            name: "Spring Boot",
+            icon: "spring",
           },
           {
-            name: "Next.js",
-            icon: "nextjs",
-          },
-          {
-            name: "Supabase",
-            icon: "supabase",
+            name: "Java",
+            icon: "java",
           },
         ],
-        // optional: leave the array empty if you don't want to display images
-        images: [
+        images: [],
+      },
+      {
+        title: "Cloud & Infrastructure",
+        description: (
+          <>
+            AWS (Lambda, RDS, S3, Secrets Manager) and Azure (Blob Storage, Service Bus, Functions, Azure AI Services). 
+            Container orchestration with Docker and Kubernetes. CI/CD pipeline design with GitHub Actions.
+          </>
+        ),
+        tags: [
           {
-            src: "/images/projects/project-01/cover-04.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
+            name: "AWS",
+            icon: "aws",
+          },
+          {
+            name: "Azure",
+            icon: "azure",
+          },
+          {
+            name: "Docker",
+            icon: "docker",
           },
         ],
+        images: [],
+      },
+      {
+        title: "Databases & Caching",
+        description: (
+          <>
+            PostgreSQL for relational data. Redis for caching (LRU cache implementations). 
+            Elasticsearch for search. Cosmos DB for document storage. Experience with database schema design and optimization.
+          </>
+        ),
+        tags: [
+          {
+            name: "PostgreSQL",
+            icon: "postgresql",
+          },
+          {
+            name: "Redis",
+            icon: "redis",
+          },
+        ],
+        images: [],
+      },
+      {
+        title: "AI & LLM Integration",
+        description: (
+          <>
+            Production AI features using Spring AI SDK and Azure AI Document Intelligence. LangChain for RAG pipelines. 
+            OpenAI APIs for prompt engineering and structured outputs. Built an MCP server for AI agent integration.
+          </>
+        ),
+        tags: [
+          {
+            name: "OpenAI",
+            icon: "openai",
+          },
+        ],
+        images: [],
+      },
+      {
+        title: "Messaging & Event Streaming",
+        description: (
+          <>
+            Event-driven microservices with Kafka. Async message passing with RabbitMQ and Azure Service Bus. 
+            Experience designing reliable message flows with retry logic and dead-letter queues.
+          </>
+        ),
+        tags: [],
+        images: [],
+      },
+      {
+        title: "APIs, Auth & Security",
+        description: (
+          <>
+            RESTful API design and documentation (OpenAPI/Swagger). OAuth 2.0, JWT, SAML. 
+            SSO implementation with Keycloak. Webhook integration for async workflows.
+          </>
+        ),
+        tags: [],
+        images: [],
       },
     ],
   },
@@ -235,8 +352,8 @@ const about: About = {
 const blog: Blog = {
   path: "/blog",
   label: "Blog",
-  title: "Writing about design and tech...",
-  description: `Read what ${person.name} has been up to recently`,
+  title: "Writing about backend engineering and systems design...",
+  description: `Technical insights and engineering philosophy from ${person.name}`,
   // Create new blog posts by adding a new .mdx file to app/blog/posts
   // All posts will be listed on the /blog route
 };
@@ -245,7 +362,7 @@ const work: Work = {
   path: "/work",
   label: "Work",
   title: `Projects – ${person.name}`,
-  description: `Design and dev projects by ${person.name}`,
+  description: `Backend engineering and AI integration projects by ${person.name}`,
   // Create new project pages by adding a new .mdx file to app/blog/posts
   // All projects will be listed on the /home and /work routes
 };
@@ -258,46 +375,7 @@ const gallery: Gallery = {
   // Images by https://lorant.one
   // These are placeholder images, replace with your own
   images: [
-    {
-      src: "/images/gallery/horizontal-1.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/vertical-4.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-    {
-      src: "/images/gallery/horizontal-3.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/vertical-1.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-    {
-      src: "/images/gallery/vertical-2.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-    {
-      src: "/images/gallery/horizontal-2.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/horizontal-4.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/vertical-3.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
+    // Gallery disabled for now - can be enabled later with architecture diagrams or personal photos
   ],
 };
 

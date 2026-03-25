@@ -1,0 +1,236 @@
+---
+title: "Quark MCP Server: Exposing Platform APIs to AI Agents"
+publishedAt: "2025-11-20"
+summary: "Designed a service layer that enables AI agents to interact with Quark's publishing platform via Model Context Protocol, exposing platform APIs as discoverable tools for LLM-based workflows."
+images:
+  - "/images/projects/quark-mcp-server/cover-01.jpg"
+team:
+  - name: "Akash Tyagi"
+    role: "Software Specialist"
+    avatar: "/images/avatar.png"
+    linkedIn: "https://www.linkedin.com/in/akashtyagi21/"
+---
+
+## The Problem
+
+Quark's publishing platform has dozens of APIs that could theoretically power AI-driven workflows:
+- Create content sections
+- Query document status
+- Trigger publishing workflows
+- Retrieve asset metadata
+- Manage user permissions
+
+But these APIs weren't accessible in a format that any **AI agent could discover or use**. An LLM can't just "figure out" how to call a REST API — it needs:
+1. **Tool definitions** (what actions are available)
+2. **Input schemas** (what parameters each action requires)
+3. **Semantic descriptions** (so the agent knows when to use each tool)
+
+Without this, integrating AI agents with Quark's platform required custom integration code for every use case. Not scalable.
+
+## Solution: MCP-Compatible Service Layer
+
+I designed and built a service layer that aggregates Quark's platform APIs into **MCP-compatible tool definitions**. This enables AI agents and LLM-based workflows to interact with the publishing platform **natively**.
+
+**Model Context Protocol (MCP)** is an emerging standard for exposing tools and context to AI agents. Think of it as OpenAPI for AI agents — a standardized way to describe what actions are available and how to invoke them.
+
+### What the MCP Server Does
+
+1. **Aggregates Platform APIs**: Wraps Quark's internal REST APIs behind a unified interface
+2. **Exposes Tool Schemas**: Converts API specifications into MCP-compatible tool definitions
+3. **Handles Authentication**: Manages OAuth tokens and API keys transparently
+4. **Provides Semantic Descriptions**: Each tool has natural-language descriptions optimized for LLM understanding
+5. **Returns Structured Outputs**: Responses formatted for AI agent consumption
+
+Example tools exposed:
+- `create_content_section` — Create a new content section in a document
+- `trigger_publish_workflow` — Start the publishing pipeline for a document
+- `query_document_status` — Get current status of a document (draft, review, published)
+- `search_assets` — Find assets by metadata or content
+- `get_user_permissions` — Check what actions a user can perform
+
+## Technical Architecture
+
+### Tech Stack
+- **Java** + **Spring Boot** (microservice foundation)
+- **MCP Protocol** (Model Context Protocol specification)
+- **REST** (internal API communication)
+- **Docker** (containerized deployment)
+
+### Service Flow
+
+```
+AI Agent / LLM
+        ↓
+"Create a new section titled 'Chapter 1' in document X"
+        ↓
+MCP Client (sends tool invocation)
+        ↓
+Quark MCP Server
+    (parses tool name, validates parameters)
+        ↓
+Authentication Layer
+    (resolves OAuth tokens, checks permissions)
+        ↓
+Platform API Gateway
+    (routes to appropriate microservice)
+        ↓
+Content Service / Publishing Service / Asset Service
+        ↓
+Structured Response
+        ↓
+MCP Server formats response
+        ↓
+AI Agent receives result, continues workflow
+```
+
+### Core Components
+
+**1. Tool Registry**  
+Maintains the catalog of available tools. Each tool definition includes:
+- **Name**: `create_content_section`
+- **Description**: "Creates a new content section in a specified document. Use this when the user wants to add structured content like a chapter or article section."
+- **Input Schema**: JSON schema defining required/optional parameters
+- **Output Schema**: What the tool returns on success
+
+The description quality is **critical** — poorly described tools cause agents to use the wrong tool or provide incorrect parameters.
+
+**2. Schema Converter**  
+Converts Quark's OpenAPI specifications into MCP tool definitions. Handles:
+- Required vs optional parameters
+- Type mappings (string, integer, enum, etc.)
+- Nested object structures
+- Array parameters
+
+**3. Authentication Proxy**  
+AI agents don't manage OAuth flows. The MCP server:
+- Accepts high-level user identity (user ID, session token)
+- Resolves to platform API credentials
+- Injects auth headers into downstream API calls
+- Refreshes expired tokens transparently
+
+**4. Error Handling & Validation**  
+Validates tool invocations before calling platform APIs:
+- Parameter type checking (is `documentId` actually an integer?)
+- Required field validation
+- Business logic checks (does user have permission for this action?)
+- Graceful error messages (not raw stack traces) for agents to interpret
+
+**5. Response Formatting**  
+Platform APIs return complex nested JSON. The MCP server:
+- Simplifies responses for agent consumption
+- Extracts key fields (e.g., "status: published" instead of full document object)
+- Provides human-readable summaries ("Document successfully published to production")
+
+## Engineering Challenges
+
+### Challenge 1: Tool Description Quality
+**Problem**: Generic descriptions lead to poor agent behavior. An LLM might call `create_content_section` when it should call `search_assets`.
+
+**Solution**: Spent meaningful effort on tool descriptions:
+- **When to use**: "Use this tool when the user wants to..."
+- **What it does**: Clear action verb (create, query, trigger, search)
+- **What it doesn't do**: Explicit negative cases ("This does NOT modify existing content")
+- **Parameter guidance**: "The `documentId` must be an integer from `query_document_status`"
+
+Tested descriptions with GPT-4 and Claude in simulated workflows to tune clarity.
+
+### Challenge 2: Handling Ambiguous Requests
+**Problem**: User says "publish my document" but has 10 documents. Which one?
+
+**Solution**: 
+- Tools return **disambiguation prompts** when context is insufficient
+- Agent can call `list_user_documents` to present options to user
+- Multi-step workflows supported — agent can chain tool calls
+
+### Challenge 3: Authentication Scope Management
+**Problem**: Platform APIs have different permission models. Some require document-level access, others tenant-level.
+
+**Solution**: 
+- MCP server validates permissions **before** calling platform APIs
+- Returns clear error: "User lacks 'publish' permission for this document"
+- Agent can surface this to user: "You don't have permission to publish this document. Request access from the document owner."
+
+### Challenge 4: Rate Limiting & Quotas
+**Problem**: AI agents can call tools rapidly. Platform APIs have rate limits.
+
+**Solution**:
+- MCP server implements **backpressure** — if platform API returns `429 Too Many Requests`, the MCP server queues the request and retries after delay
+- Exposes rate limit status to agents: "tool call quota: 45/100 remaining"
+- Agents can adjust behavior (batch operations instead of individual calls)
+
+### Challenge 5: Versioning
+**Problem**: Platform APIs evolve. Tool definitions need to stay in sync.
+
+**Solution**:
+- MCP server includes version negotiation
+- Agents specify which tool version they're compatible with
+- Server maintains multiple tool versions simultaneously during deprecation periods
+- Breaking changes communicated via changelog API
+
+## Design Decisions
+
+**Why MCP instead of custom protocol?**  
+MCP is an emerging standard (backed by Anthropic and others). Using a standard protocol means:
+- Compatibility with existing MCP clients (Claude Desktop, Cursor IDE, etc.)
+- Future-proof as AI tooling ecosystem matures
+- Community tooling and libraries
+
+**Why not expose raw APIs directly?**  
+Raw REST APIs lack semantic descriptions. An LLM can't "guess" what `/api/v2/content/sections/create` does without natural-language context.
+
+**Why simplify responses?**  
+Platform APIs return full object graphs (documents with nested sections, assets, metadata). This bloats token usage when agents only need "status: published". Simplification reduces cost and latency.
+
+**Why validate at MCP layer instead of relying on platform APIs?**  
+Faster feedback loop. If the MCP server catches an invalid parameter, the agent gets an actionable error immediately. If the error comes from the platform API 3 hops downstream, it's harder to debug.
+
+## Impact & Use Cases
+
+### Current Usage
+- **Internal AI Assistants**: Used by Quark employees to automate repetitive workflows (bulk content updates, status checks)
+- **Client-Facing Chatbots**: Some enterprise clients have integrated MCP tools into internal chatbots for self-service publishing
+- **Developer Workflows**: Engineers use MCP-enabled tools (Cursor, Claude Desktop) to interact with staging environments
+
+### Example Workflow: Automated Publishing
+```
+User: "Publish all documents marked ready for review"
+↓
+Agent calls: list_documents(status="ready_for_review")
+↓
+Returns: [doc1, doc2, doc3]
+↓
+Agent calls: trigger_publish_workflow(doc1)
+Agent calls: trigger_publish_workflow(doc2)
+Agent calls: trigger_publish_workflow(doc3)
+↓
+Agent: "Successfully triggered publishing for 3 documents"
+```
+
+This workflow previously required custom scripting or manual clicking through the UI.
+
+### Developer Feedback
+> "The MCP server made Quark's APIs actually usable from AI tools. Before, I'd have to read API docs and write curl commands. Now I just ask Claude to 'query document status' and it works."  
+> — Internal engineer feedback
+
+## What's Next
+
+Potential expansions:
+- **More tool coverage**: Expose asset management, user provisioning, analytics APIs
+- **Streaming support**: For long-running operations (large publishing jobs), stream progress updates
+- **Context awareness**: Let agents query document content, not just metadata
+- **Multi-tenant isolation**: Currently scoped to single-tenant use cases; expand to multi-tenant with proper isolation
+
+## Lessons Learned
+
+**Tool description quality > everything else.**  
+You can have perfect code, but if your tool descriptions are ambiguous, agents will misuse them. I iterated on descriptions more than I iterated on code.
+
+**MCP is early but promising.**  
+The protocol is still evolving. Some rough edges around error handling and streaming. But the core idea — standardized tool exposure for AI agents — is sound.
+
+**Design for humans debugging AI behavior.**  
+When an agent does something wrong, you need to trace why it chose that tool. I added extensive logging of tool selection reasoning (based on description matches) which has been invaluable for debugging.
+
+---
+
+**Key Takeaway**: This project demonstrates forward-thinking engineering — building infrastructure for AI-driven workflows before they're mainstream. The MCP server has become a strategic asset for Quark, enabling experiments with AI automation that weren't feasible before. It's also greenfield design work — no existing MCP servers to reference, so I had to reason from first principles about tool schema design, authentication flows, and error handling patterns.

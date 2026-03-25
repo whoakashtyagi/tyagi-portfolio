@@ -1,0 +1,278 @@
+---
+title: "Spring Boot 3.4 + RabbitMQ 4 REST API Template"
+publishedAt: "2024-01-15"
+summary: "Two-service async messaging system demonstrating producer-consumer pattern with Spring Boot 3.4 and RabbitMQ 4. One-command Docker Compose deployment."
+images:
+  - "/images/projects/spring-boot-rabbitmq-rest-api/cover-01.jpg"
+team:
+  - name: "Akash Tyagi"
+    role: "Backend Developer"
+    avatar: "/images/avatar.png"
+    linkedIn: "https://www.linkedin.com/in/akashtyagi21/"
+link: "https://github.com/whoakashtyagi/Spring-Boot-3.4.1-REST-API-for-RabbitMQ-4"
+---
+
+## Overview
+
+A production-ready template for building async messaging systems with **Spring Boot 3.4** and **RabbitMQ 4**. The project demonstrates:
+- **Producer-Consumer pattern** with two Spring Boot services
+- **REST API** that publishes messages to RabbitMQ
+- **Consumer service** that processes messages asynchronously
+- **Docker Compose** setup for one-command deployment
+- **Latest versions** of Spring Boot and RabbitMQ (as of early 2024)
+
+## Why This Project?
+
+The gap between "I know what a message queue does" and "I can design reliable async flows in production" is large. This project was deliberately scoped to focus **entirely on the messaging layer** — no UI, no complex business logic, just hands-on practice with:
+- **Producer setup**: Sending messages to queues
+- **Consumer setup**: Receiving and processing messages
+- **Connection management**: Broker connections, channels, failover
+- **Configuration**: Virtual hosts, exchanges, routing keys
+
+Built this to **understand Spring AMQP** properly, especially the changes in Spring Boot 3.4 and RabbitMQ 4 (virtual host configuration, connection factory updates).
+
+## Architecture
+
+### System Design
+```
+┌─────────────────────┐
+│   Producer Service  │
+│   (Spring Boot)     │
+│                     │
+│   REST API          │
+│   POST /messages    │
+└──────────┬──────────┘
+           │ Publishes
+           ↓
+    ┌─────────────┐
+    │  RabbitMQ   │
+    │   Broker    │
+    │             │
+    │   Queue: A  │
+    └──────┬──────┘
+           │ Consumes
+           ↓
+┌─────────────────────┐
+│  Consumer Service   │
+│  (Spring Boot)      │
+│                     │
+│  @RabbitListener    │
+└─────────────────────┘
+```
+
+### Components
+
+**Producer Service**
+- Exposes REST API: `POST /api/messages`
+- Receives JSON payload
+- Publishes to RabbitMQ queue
+- Returns 202 Accepted (async processing)
+
+**RabbitMQ Broker**
+- Deployed via Docker
+- Exchange: `direct` (default)
+- Queue: `message-queue`
+- Persistence: Messages survive broker restart
+
+**Consumer Service**
+- Listens on `message-queue`
+- Processes messages asynchronously
+- Logs message content (demo logic)
+- Acknowledges after processing
+
+## Tech Stack
+
+- **Spring Boot 3.4.1** — Latest stable release (as of early 2024)
+- **Spring AMQP** — RabbitMQ integration for Spring
+- **RabbitMQ 4.0** — Message broker
+- **Docker Compose** — Container orchestration
+- **Java 21** — Latest LTS version
+
+## Configuration Highlights
+
+### Producer Configuration
+```java
+@Configuration
+public class RabbitMQConfig {
+  @Value("${spring.rabbitmq.host}")
+  private String host;
+  
+  @Value("${spring.rabbitmq.port}")
+  private int port;
+  
+  @Bean
+  public ConnectionFactory connectionFactory() {
+    CachingConnectionFactory factory = new CachingConnectionFactory();
+    factory.setHost(host);
+    factory.setPort(port);
+    factory.setUsername("guest");
+    factory.setPassword("guest");
+    factory.setVirtualHost("/"); // ← Virtual host config (new in RabbitMQ 4)
+    return factory;
+  }
+  
+  @Bean
+  public Queue queue() {
+    return new Queue("message-queue", true); // durable = true
+  }
+  
+  @Bean
+  public RabbitTemplate rabbitTemplate(ConnectionFactory factory) {
+    return new RabbitTemplate(factory);
+  }
+}
+```
+
+### Consumer Configuration
+```java
+@Component
+public class MessageConsumer {
+  private static final Logger log = LoggerFactory.getLogger(MessageConsumer.class);
+  
+  @RabbitListener(queues = "message-queue")
+  public void receiveMessage(String message) {
+    log.info("Received message: {}", message);
+    // Process message here
+    // Acknowledgment is automatic (default mode)
+  }
+}
+```
+
+### Docker Compose Setup
+```yaml
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  producer:
+    build: ./producer-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  
+  consumer:
+    build: ./consumer-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+```
+
+## Key Learnings
+
+### 1. Virtual Host Configuration
+RabbitMQ 4 introduced stricter validation for virtual hosts. The default virtual host is `/`, but it must be **explicitly configured** in Spring Boot 3.4. Old tutorials that omit this fail silently.
+
+### 2. Connection Factory vs. CachingConnectionFactory
+Spring AMQP provides `CachingConnectionFactory` which:
+- Reuses connections across threads
+- Maintains a channel pool
+- Handles connection failures with automatic retry
+
+Don't use `com.rabbitmq.client.ConnectionFactory` directly — you'll manage connections manually and lose Spring's resilience features.
+
+### 3. Consumer Concurrency
+Default consumer: **single thread** processing messages sequentially.  
+For high throughput, configure concurrent consumers:
+```java
+@RabbitListener(queues = "message-queue", concurrency = "3-10")
+```
+- `3-10` means: Start with 3 consumers, scale up to 10 based on queue depth
+
+### 4. Message Acknowledgment Modes
+- **AUTO** (default): Spring sends ACK after `@RabbitListener` method completes
+- **MANUAL**: You call `channel.basicAck()` explicitly
+- **NONE**: No acknowledgment (fast but risky — messages lost on consumer crash)
+
+For production, **AUTO** is usually correct. Use **MANUAL** only for complex workflows where you need fine-grained control.
+
+### 5. Error Handling
+If consumer throws an exception:
+- Default behavior: Message **requeued** and retried indefinitely (can cause poison message loop)
+- Solution: Configure **dead-letter queue** (DLQ) for failed messages
+```java
+@Bean
+public Queue queue() {
+  return QueueBuilder.durable("message-queue")
+    .withArgument("x-dead-letter-exchange", "dlx")
+    .build();
+}
+```
+
+## Running the Project
+
+### Prerequisites
+- Docker and Docker Compose installed
+- Java 21 installed
+- Port 8080 (producer), 5672 (RabbitMQ), 15672 (management UI) available
+
+### Start Services
+```bash
+docker-compose up --build
+```
+
+### Send Message
+```bash
+curl -X POST http://localhost:8080/api/messages \
+  -H "Content-Type: application/json" \
+  -d '{"content": "Hello, RabbitMQ!"}'
+```
+
+### Verify
+- Check consumer logs: Should print "Received message: Hello, RabbitMQ!"
+- Check RabbitMQ UI: http://localhost:15672 (guest/guest)
+  - Queue depth should be 0 (message consumed)
+  - Message rates should show activity
+
+## Why This Architecture?
+
+**Why REST API for producer?**  
+Most real-world systems expose HTTP APIs. This simulates a user-facing service that offloads work to background processing.
+
+**Why separate producer and consumer services?**  
+In production, producer and consumer often run at different scales. Producer handles user requests (high RPS), consumer handles batch processing (lower throughput but CPU-intensive). Separating them allows independent scaling.
+
+**Why Docker Compose?**  
+One-command deployment reproduces the system anywhere. No "works on my machine" issues. Easy for teammates to try the project.
+
+**Why no complex business logic?**  
+The goal is to understand **messaging patterns**, not build a product. Complex logic would distract from connection management, error handling, and configuration.
+
+## Potential Extensions
+
+- Add **retry logic with exponential backoff**
+- Implement **dead-letter queue** for failed messages
+- Add **metrics** (message throughput, consumer lag)
+- Support **message priority**
+- Add **publisher confirms** for guaranteed delivery
+
+## What I Learned
+
+**Spring AMQP abstracts complexity well — but you need to understand what's underneath.**  
+`@RabbitListener` is magical until it breaks. Then you need to know about connections, channels, acknowledgments, and broker behavior.
+
+**Configuration matters.**  
+Virtual host, connection pooling, concurrency — these are easy to get wrong. Reading the Spring AMQP docs carefully saved days of debugging.
+
+**Testing async systems is different.**  
+Can't just `assertEquals(result, expected)`. Need to wait for async processing, check broker state, verify message consumption. `Awaitility` library is essential for testing.
+
+---
+
+**Key Takeaway**: This project demonstrates my ability to **learn new frameworks through deliberate, focused practice**. It's not flashy, but it's the kind of foundational work that translates directly to production systems. When I need to integrate RabbitMQ in a real project, I won't be guessing — I've already debugged connection issues, understood acknowledgment modes, and configured concurrency properly.
+
+**GitHub**: [github.com/whoakashtyagi/Spring-Boot-3.4.1-REST-API-for-RabbitMQ-4](https://github.com/whoakashtyagi/Spring-Boot-3.4.1-REST-API-for-RabbitMQ-4)

@@ -1,0 +1,156 @@
+---
+title: "Prapper AI: Full-Stack AI Agent Builder Platform"
+publishedAt: "2024-03-15"
+summary: "Production SaaS platform enabling businesses to create custom AI chatbots with document retrieval, lead management, and embeddable widgets. Built with Next.js 15, LangChain.js, and Supabase."
+images:
+  - "/images/projects/prapper-ai/cover-01.jpg"
+  - "/images/projects/prapper-ai/cover-02.jpg"
+team:
+  - name: "Akash Tyagi"
+    role: "Full-Stack Developer"
+    avatar: "/images/avatar.png"
+    linkedIn: "https://www.linkedin.com/in/akashtyagi21/"
+link: "https://github.com/whoakashtyagi/prapper-ai"
+---
+
+## Overview
+
+Prapper AI is a production-ready SaaS platform that demonstrates advanced full-stack development combined with sophisticated AI capabilities. The platform allows users to build, customize, and deploy AI agents that can understand documents, manage conversations, and capture leads — all through an intuitive interface.
+
+**Live Demo**: [prapper-ai.vercel.app](https://prapper-ai.vercel.app/)
+
+This project represents my exploration into the intersection of AI orchestration and product engineering — moving beyond backend-only work to understand how AI features translate into user-facing products.
+
+## The Problem
+
+Building a custom AI chatbot that can answer questions from your own documents isn't trivial. It requires:
+- Document parsing and intelligent chunking
+- Vector embeddings and semantic search infrastructure
+- LLM orchestration with context management
+- Real-time streaming for responsive UX
+- Multi-tenancy with proper data isolation
+- Embeddable widgets that work across domains
+
+Most solutions are either too rigid (SaaS platforms that don't allow customization) or too low-level (raw APIs that require significant engineering).
+
+## Key Features
+
+### 🤖 Custom AI Agent Builder
+Users can create personalized AI assistants with configurable models (OpenAI, Cohere, Groq, Google GenAI) and custom system prompts. Each agent maintains isolated conversation history and knowledge bases.
+
+### 📄 Document Processing & RAG
+Upload PDF documents and the system automatically:
+- Parses and intelligently chunks content
+- Generates vector embeddings via Cohere
+- Stores vectors in Supabase with pgvector extension
+- Retrieves relevant context via semantic search during conversations
+
+The hard part wasn't the AI call — it was building a reliable chunking strategy that maintains semantic coherence across document types while optimizing for retrieval quality.
+
+### 💬 Real-Time Streaming Chat
+Implemented server-sent events (SSE) for smooth, token-by-token streaming of AI responses. This required careful state management to handle:
+- Partial responses and error recovery
+- User interruptions mid-stream
+- Context window overflow
+- Rate limiting across multiple concurrent streams
+
+### 🎨 Embeddable Chat Widgets
+Deploy AI agents anywhere with customizable chat interfaces that can be embedded via iframe. Solved the cross-domain communication challenges with proper postMessage patterns and CORS configuration.
+
+### 👥 Lead Management System
+Automatic lead capture from chat interactions with email/phone extraction. Built with row-level security (RLS) in Supabase to ensure leads are only visible to the tenant who owns the agent.
+
+### ⚡ Edge Runtime Deployment
+Leveraged Vercel Edge Functions for serverless deployment, optimizing cold start times and global response latency. Had to carefully manage bundle sizes and move heavy dependencies to runtime imports.
+
+## Technical Architecture
+
+### Frontend Layer
+- **Next.js 15** with App Router and Server Components
+- **TypeScript** for full type safety across the stack
+- **Tailwind CSS** + **Radix UI** for accessible component library
+- **Framer Motion** for smooth animations
+- State management via React hooks and `nuqs` for URL state
+
+### AI Orchestration
+- **LangChain.js** for AI chains and prompt management
+- **LangGraph** for complex agent workflows and decision trees
+- **Multi-model support** with abstracted model selection layer
+- Custom prompt templates optimized for different use cases
+
+### Backend & Database
+- **Supabase** (PostgreSQL + pgvector) for vector storage and semantic search
+- **Row Level Security** for multi-tenant data isolation
+- Edge Functions for serverless API routes
+- Real-time subscriptions via WebSockets
+
+### Vector Search Pipeline
+```
+Document Upload → PDF Parsing → Text Chunking → 
+Cohere Embeddings → pgvector Storage → Semantic Search → 
+LangChain RAG Chain → Streaming Response
+```
+
+## Engineering Decisions
+
+**Why LangChain over raw OpenAI SDK?**  
+LangChain provides abstractions for chains, memory, and retrieval that significantly reduce boilerplate when building RAG pipelines. The trade-off is bundle size and learning curve, but for a product with multiple agent types, the abstraction pays off.
+
+**Why Supabase over a dedicated vector database?**  
+Supabase provides PostgreSQL with pgvector, authentication, and real-time subscriptions in one platform. For a SaaS product, having auth and database in a unified system reduces operational complexity. Performance is sufficient for <100k vectors per tenant.
+
+**Serverless vs. long-running servers?**  
+Edge Functions were chosen for cost efficiency and global distribution. The main challenge was managing cold starts for LangChain initialization. Solution: lazy-load heavy dependencies and keep the critical path lightweight.
+
+**TypeScript everywhere?**  
+Yes. The type safety catches edge cases in API contracts between frontend/backend and reduces runtime errors. The initial setup cost is worth it for a multi-tenant product where bugs can affect multiple customers.
+
+## Challenges & Solutions
+
+### Challenge 1: Document Chunking Strategy
+**Problem**: Naive fixed-size chunking breaks semantic coherence in technical documents.  
+**Solution**: Implemented recursive character text splitter with overlap, tuned chunk size to balance context window vs retrieval precision. Added metadata preservation for source attribution.
+
+### Challenge 2: Context Window Management
+**Problem**: User conversations with document context can quickly exceed model context limits.  
+**Solution**: Sliding window with conversation summarization. Keep only last N messages + retrieved documents. Summarize older context if session is long.
+
+### Challenge 3: Multi-Tenant Vector Isolation
+**Problem**: Need to ensure Agent A can't access Agent B's documents.  
+**Solution**: Supabase RLS policies that filter queries by `user_id`. Vector search queries automatically scoped by authenticated user. Added tests to verify isolation.
+
+### Challenge 4: Streaming State Management
+**Problem**: Handling partial responses, errors, and user interruptions during streaming.  
+**Solution**: Built a finite state machine for stream lifecycle (idle → streaming → complete/error). Client-side abort controller for user cancellations. Server-side cleanup on disconnect.
+
+## Learning Outcomes
+
+This project was my first serious deep-dive into:
+- **AI orchestration** beyond simple API calls
+- **Vector databases** and semantic search
+- **Next.js 15** App Router patterns
+- **Product engineering** (not just backend services)
+- **TypeScript** at scale with strict mode
+
+The biggest lesson: **AI features are 30% model calls, 70% everything else** — chunking strategy, retrieval quality, error handling, streaming UX, and operational concerns like rate limiting and cost management.
+
+## Results & Current Status
+
+- ✅ Deployed to production at [prapper-ai.vercel.app](https://prapper-ai.vercel.app/)
+- 📊 Handles document Q&A with sub-2s response times
+- 🔐 Multi-tenant architecture with proper data isolation
+- 📦 Embeddable widget used in test deployments
+- 🎯 Lead capture successfully extracts contact info from natural conversations
+
+**What's Next**: Potential improvements include conversational memory optimization, support for more document types (DOCX, HTML), and analytics dashboard for agent owners.
+
+## Tech Stack Summary
+
+**Frontend**: Next.js 15 • React 18 • TypeScript • Tailwind CSS • Radix UI • Framer Motion  
+**AI/ML**: LangChain.js • LangGraph • OpenAI • Cohere • Groq • Google GenAI  
+**Backend**: Supabase (PostgreSQL + pgvector) • Edge Functions • Row-Level Security  
+**DevOps**: Vercel serverless • Bundle optimization • Real-time subscriptions
+
+---
+
+**Key Takeaway**: This project demonstrates my ability to move beyond backend services and build full-stack AI products. The engineering discipline from backend work (error handling, data modeling, operational thinking) translated well to product development — while forcing me to learn frontend architecture, UX considerations, and the nuances of shipping AI features that real users interact with.

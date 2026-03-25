@@ -1,0 +1,192 @@
+---
+title: "AI-Powered Document Structuring Service"
+publishedAt: "2025-09-15"
+summary: "Reduced client onboarding time by 80% using Spring AI SDK and Azure AI Document Intelligence to automatically map legacy documents to Quark's internal schema."
+images:
+  - "/images/projects/ai-document-structuring-service/cover-01.jpg"
+team:
+  - name: "Akash Tyagi"
+    role: "Software Specialist"
+    avatar: "/images/avatar.png"
+    linkedIn: "https://www.linkedin.com/in/akashtyagi21/"
+---
+
+## The Problem
+
+Quark's enterprise publishing platform serves global media and content organizations. When a new client signs up, they typically arrive with **years of documents in proprietary or unstructured formats** — DOCX files, PDFs, legacy XML schemas that don't map cleanly to Quark's internal content model.
+
+The existing onboarding process was **manual and expensive**: migration specialists would spend days (sometimes weeks) parsing documents, manually identifying structures (headings, sections, tables, metadata), and mapping them to Quark's schema. This didn't scale as the client base grew.
+
+**Business Impact**: Slow onboarding meant longer time-to-value for clients and constrained sales velocity. The manual process was also error-prone — a misclassified heading could break a book's table of contents.
+
+## Solution: AI-Powered Ingestion Pipeline
+
+I built an AI-powered document ingestion microservice that automates the entire migration workflow:
+
+1. **Document Ingestion**: Accepts DOCX and PDF files via REST API
+2. **Intelligent Extraction**: Passes documents through **Azure AI Document Intelligence** for structure analysis  
+   → Extracts tables, headings, sections, paragraphs, metadata
+3. **Schema Mapping Layer**: Custom mapping logic converts Azure's semi-structured JSON into Quark's internal schema format
+4. **Confidence Scoring**: Flags ambiguous mappings for human review rather than silently mapping incorrectly
+5. **Idempotent Processing**: Supports resumable jobs for large document batches that may timeout mid-way
+
+**Result**: **80% reduction in client onboarding time**. What used to take days now completes in hours with minimal human involvement.
+
+## Technical Architecture
+
+### Tech Stack
+- **Java** + **Spring Boot** (microservice foundation)
+- **Spring AI SDK** (LLM orchestration and structured outputs)
+- **Azure AI Document Intelligence** (intelligent document extraction)
+- **PostgreSQL** (job state and mapping metadata)
+- **Docker** (containerized deployment)
+
+### Service Flow
+
+```
+Client Document Upload (DOCX/PDF)
+        ↓
+Document Validation & Storage
+        ↓
+Azure AI Document Intelligence
+    (Tables, Headings, Sections, Metadata Extraction)
+        ↓
+Semi-Structured JSON Response
+        ↓
+Custom Mapping Layer
+    (Confidence Scoring, Error Detection)
+        ↓
+Quark Schema Objects
+        ↓
+Validation & Human Review (if needed)
+        ↓
+Import into Quark Platform
+```
+
+### Core Components
+
+**1. Document Extraction Service**  
+Integrates with Azure AI Document Intelligence via REST API. Handles retries, rate limiting, and pagination for large documents.
+
+**2. Schema Mapping Engine**  
+The hardest part of the system. Azure's extraction returns semi-structured JSON that varies significantly by document type:
+- Technical manuals have deeply nested sections
+- Marketing PDFs have complex table structures
+- Legacy XML has non-standard heading conventions
+
+The mapping engine:
+- Uses **pattern matching** to identify structural elements
+- Applies **heuristics** based on font size, position, and content for ambiguous cases
+- Generates **confidence scores** (0-1) for each mapping decision
+- Automatically flags low-confidence mappings (<0.7) for human review
+
+**3. Idempotency & Resumability**  
+Large document jobs (100+ pages) can timeout. The service is designed to be idempotent:
+- Each document chunk gets a unique ID
+- Progress is tracked in PostgreSQL
+- Jobs can be paused and resumed without re-processing completed chunks
+- Failed extractions are retried with exponential backoff
+
+**4. Validation Layer**  
+Before importing into Quark's schema:
+- Structural validation (required fields present, relationships intact)
+- Content sanitization (remove unsupported characters, normalize formatting)
+- Reference resolution (ensure internal links and cross-references resolve)
+
+## Engineering Challenges
+
+### Challenge 1: Structural Variance Across Document Types
+**Problem**: Azure's extraction output varies wildly depending on document source. A heading in one PDF might be detected as a paragraph in another.
+
+**Solution**: Built a **confidence-scoring system** that considers multiple signals:
+- Font size and weight (headings are usually larger/bold)
+- Position in document hierarchy
+- Content patterns (e.g., "Chapter 1" signals a heading)
+- Surrounding context (what comes before/after)
+
+If confidence is below threshold, the item is flagged for human review rather than auto-mapped. This prevents silent errors that are expensive to fix later.
+
+### Challenge 2: Handling Extraction Failures Gracefully
+**Problem**: Azure AI Document Intelligence occasionally returns incomplete results for complex layouts or corrupted PDFs.
+
+**Solution**: 
+- Retry logic with exponential backoff for transient failures
+- Partial success handling — if a document has 10 sections and 8 extract successfully, import those 8 and flag the 2 failures
+- Detailed error logs with page numbers and element types for debugging
+- Human-readable error messages for operators ("Table on page 12 has ambiguous structure")
+
+### Challenge 3: Idempotency for Long-Running Jobs
+**Problem**: A 500-page document might take 10+ minutes to process. Timeouts are inevitable.
+
+**Solution**: 
+- Break documents into chunks (logical sections, not arbitrary page ranges)
+- Store processing state in PostgreSQL with transaction isolation
+- Each chunk gets a hash of its content — re-running the job skips already-processed chunks
+- Expose job status API (`/jobs/{id}/status`) so clients can poll progress
+
+### Challenge 4: Cost Management
+**Problem**: Azure AI Document Intelligence charges per page. Unoptimized usage could get expensive at scale.
+
+**Solution**:
+- Caching layer for repeated documents (development/testing)
+- Batch processing to reduce API call overhead
+- Skip extraction for documents that haven't changed (content hash comparison)
+- Resource monitoring and alerts for cost anomalies
+
+## Design Decisions
+
+**Why Azure AI Document Intelligence over open-source alternatives?**  
+Evaluated Tesseract OCR, Apache Tika, and custom models. Azure's pre-trained models handle complex layouts (multi-column PDFs, tables, forms) significantly better than open-source options. The cost per page is justified by the accuracy gain.
+
+**Why confidence scoring instead of always asking for human review?**  
+Early iterations flagged everything ambiguous. This created review fatigue — operators started blindly approving without checking. Confidence thresholds tune the review load to only truly ambiguous cases.
+
+**Why PostgreSQL instead of a document database?**  
+Job state and mapping metadata are relational (documents → sections → paragraphs). PostgreSQL provides ACID guarantees for job state transitions, which matters when resuming failed jobs.
+
+**Why Spring AI SDK instead of raw Azure SDK?**  
+Spring AI SDK provides abstractions for prompt templating, structured outputs, and error handling. It also makes the service model-agnostic — we could swap Azure for OpenAI in the future with minimal code changes.
+
+## Impact & Results
+
+### Quantitative
+- **80% reduction** in average onboarding time (days → hours)
+- **95%+ accuracy** on standard document formats (DOCX, clean PDFs)
+- **~85% accuracy** on legacy/scanned documents (flagged remainder for review)
+- **Zero complaints** about silent mapping errors (confidence scoring works)
+
+### Qualitative
+- Sales team can now promise faster onboarding in client pitches
+- Migration specialists freed up to handle edge cases and client customization
+- New revenue opportunity: offer document migration as a paid service
+
+### Operational
+- Service processes **500+ documents/week** in production
+- Average processing time: **2-3 minutes per document** (depends on size)
+- Error rate: **<5%** (mostly edge cases like corrupted PDFs)
+
+## Lessons Learned
+
+**AI features are 30% model calls, 70% everything else.**  
+The Azure API call is straightforward. The hard part is handling structural variance, building confidence scoring, ensuring idempotency, monitoring costs, and making errors debuggable.
+
+**Confidence scoring > binary decisions.**  
+Early versions either auto-mapped everything or flagged everything. Confidence thresholds let us tune the review burden to operator capacity.
+
+**Idempotency is non-negotiable for long-running jobs.**  
+Users will retry failed jobs. If the service isn't idempotent, you'll double-process documents and confuse operators.
+
+**Design for observability from day one.**  
+Added detailed logging, job status APIs, and error messages before the first production deployment. This saved days of debugging during initial rollout.
+
+## What's Next
+
+Potential improvements:
+- Support for more input formats (HTML, Markdown, EPUB)
+- Human-in-the-loop UI for reviewing low-confidence mappings
+- Active learning — use operator corrections to improve confidence scoring
+- Multi-language document support (currently optimized for English)
+
+---
+
+**Key Takeaway**: This project demonstrates my ability to integrate AI into production workflows with proper error handling, cost management, and operational concerns. The 80% time reduction is real — measured across dozens of client migrations — and the service has become critical infrastructure at Quark.
