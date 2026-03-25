@@ -50,7 +50,7 @@ Training a CNN from scratch requires:
 ### Model Architecture
 
 **Base Model**: MobileNetV2 (pre-trained on ImageNet)  
-- Chosen for **inference speed** on constrained hardware (real-time video requires <50ms per frame)
+- Chosen for **inference speed** on constrained hardware (real-time video requires `<50ms` per frame)
 - A full ResNet would be more accurate but too slow for real-time processing
 
 **Fine-Tuning**:
@@ -224,7 +224,7 @@ cv2.destroyAllWindows()
 **Problem**: ResNet50 achieved 98% accuracy but took ~150ms per frame (too slow for real-time). MobileNetV2 was faster but initially 92% accurate.
 
 **Solution**: 
-- Chose **MobileNetV2** for inference speed (<50ms)
+- Chose **MobileNetV2** for inference speed (`<50ms`)
 - Improved accuracy through **data augmentation** and **fine-tuning hyperparameters**
 - Final accuracy: **95%** (acceptable trade-off for real-time performance)
 

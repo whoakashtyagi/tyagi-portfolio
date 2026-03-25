@@ -78,7 +78,7 @@ The mapping engine:
 - Uses **pattern matching** to identify structural elements
 - Applies **heuristics** based on font size, position, and content for ambiguous cases
 - Generates **confidence scores** (0-1) for each mapping decision
-- Automatically flags low-confidence mappings (<0.7) for human review
+- Automatically flags low-confidence mappings (`<0.7`) for human review
 
 **3. Idempotency & Resumability**  
 Large document jobs (100+ pages) can timeout. The service is designed to be idempotent:
@@ -163,7 +163,7 @@ Spring AI SDK provides abstractions for prompt templating, structured outputs, a
 ### Operational
 - Service processes **500+ documents/week** in production
 - Average processing time: **2-3 minutes per document** (depends on size)
-- Error rate: **<5%** (mostly edge cases like corrupted PDFs)
+- Error rate: **`<5%`** (mostly edge cases like corrupted PDFs)
 
 ## Lessons Learned
 

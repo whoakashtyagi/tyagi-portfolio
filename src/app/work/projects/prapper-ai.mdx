@@ -97,7 +97,7 @@ LangChain RAG Chain → Streaming Response
 LangChain provides abstractions for chains, memory, and retrieval that significantly reduce boilerplate when building RAG pipelines. The trade-off is bundle size and learning curve, but for a product with multiple agent types, the abstraction pays off.
 
 **Why Supabase over a dedicated vector database?**  
-Supabase provides PostgreSQL with pgvector, authentication, and real-time subscriptions in one platform. For a SaaS product, having auth and database in a unified system reduces operational complexity. Performance is sufficient for <100k vectors per tenant.
+Supabase provides PostgreSQL with pgvector, authentication, and real-time subscriptions in one platform. For a SaaS product, having auth and database in a unified system reduces operational complexity. Performance is sufficient for `<100k` vectors per tenant.
 
 **Serverless vs. long-running servers?**  
 Edge Functions were chosen for cost efficiency and global distribution. The main challenge was managing cold starts for LangChain initialization. Solution: lazy-load heavy dependencies and keep the critical path lightweight.

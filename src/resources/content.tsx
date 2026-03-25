@@ -1,3 +1,4 @@
+// biome-ignore lint/style/useImportType: <explanation>
 import { About, Blog, Gallery, Home, Newsletter, Person, Social, Work } from "@/types";
 import { Line, Row, Text } from "@once-ui-system/core";
 
