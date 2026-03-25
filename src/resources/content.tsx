@@ -48,8 +48,8 @@ const home: Home = {
   image: "/images/og/home.svg",
   label: "Home",
   title: `${person.name} – Backend Engineer`,
-  description: `Portfolio showcasing 4+ years of distributed systems, microservices, and AI integration work`,
-  headline: <>I design systems. Not just code.</>,
+  description: `Backend engineer at Quark building distributed systems, microservices, and AI features`,
+  headline: <>Building backend systems that actually work at scale</>,
   featured: {
     display: true,
     title: (
@@ -65,9 +65,10 @@ const home: Home = {
   },
   subline: (
     <>
-      Backend software engineer with <Text as="span" weight="strong">4+ years</Text> shipping production infrastructure at scale. <br />
-      Distributed systems, cloud-native services, and AI integrations are my home turf — but fundamentals travel. <br />
-      I pick up new languages fast because I understand what's underneath them.
+      I'm a backend engineer at Quark, where I've spent 4+ years building enterprise SaaS infrastructure. <br />
+      I work mostly with Java and Spring Boot, but the language isn't the interesting part — it's the system design, 
+      the failure modes, the scaling path. <br />
+      Recently I've been integrating AI into actual production features, not demos.
     </>
   ),
 };
