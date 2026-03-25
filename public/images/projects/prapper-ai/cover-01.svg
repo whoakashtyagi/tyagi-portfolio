@@ -1,0 +1,44 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad8" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7f7fd5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#86a8e7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad8)"/>
+  
+  <!-- Chat interface mockup -->
+  <rect x="200" y="100" width="800" height="430" rx="20" fill="white" opacity="0.95"/>
+  
+  <!-- Header -->
+  <rect x="200" y="100" width="800" height="70" rx="20" fill="#6366f1"/>
+  <rect x="200" y="135" width="800" height="70"/>
+  <text x="250" y="148" font-family="Arial, sans-serif" font-size="28" fill="white" font-weight="bold">Prapper AI Assistant</text>
+  
+  <!-- Chat bubbles - User message -->
+  <rect x="640" y="210" width="320" height="60" rx="12" fill="#e5e7eb"/>
+  <text x="660" y="235" font-family="Arial, sans-serif" font-size="16" fill="#374151">How do I schedule a meeting?</text>
+  
+  <!-- Chat bubbles - AI response -->
+  <rect x="240" y="290" width="420" height="100" rx="12" fill="#6366f1" opacity="0.9"/>
+  <text x="260" y="315" font-family="Arial, sans-serif" font-size="16" fill="white">I can help you schedule a meeting!</text>
+  <text x="260" y="345" font-family="Arial, sans-serif" font-size="14" fill="white" opacity="0.9">Based on your calendar, I have 3 available</text>
+  <text x="260" y="370" font-family="Arial, sans-serif" font-size="14" fill="white" opacity="0.9">slots this week. Would you like to...</text>
+  
+  <!-- Typing indicator -->
+  <rect x="240" y="410" width="100" height="40" rx="12" fill="#e5e7eb"/>
+  <circle cx="270" cy="430" r="6" fill="#6366f1" opacity="0.6"/>
+  <circle cx="290" cy="430" r="6" fill="#6366f1" opacity="0.6"/>
+  <circle cx="310" cy="430" r="6" fill="#6366f1" opacity="0.6"/>
+  
+  <!-- AI icon in header -->
+  <circle cx="950" cy="135" r="25" fill="white" opacity="0.3"/>
+  <text x="950" y="147" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle">✨</text>
+  
+  <!-- Title -->
+  <text x="600" y="580" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">
+    Prapper AI Platform
+  </text>
+</svg>

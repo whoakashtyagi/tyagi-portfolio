@@ -1,0 +1,42 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#11998e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#38ef7d;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad2)"/>
+  
+  <!-- AI Agent representation -->
+  <circle cx="350" cy="315" r="80" fill="white" opacity="0.2"/>
+  <circle cx="350" cy="315" r="60" fill="white" opacity="0.3"/>
+  <text x="350" y="335" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">AI</text>
+  
+  <!-- MCP Protocol layer -->
+  <rect x="480" y="250" width="240" height="130" rx="8" fill="white" opacity="0.25"/>
+  <text x="600" y="295" font-family="monospace" font-size="24" font-weight="bold" fill="white" text-anchor="middle">MCP</text>
+  <text x="600" y="330" font-family="monospace" font-size="18" fill="white" text-anchor="middle" opacity="0.9">Protocol</text>
+  
+  <!-- API endpoints -->
+  <rect x="770" y="180" width="180" height="60" rx="6" fill="#60a5fa" opacity="0.9"/>
+  <text x="860" y="217" font-family="monospace" font-size="16" fill="white" text-anchor="middle">GET /content</text>
+  
+  <rect x="770" y="260" width="180" height="60" rx="6" fill="#a78bfa" opacity="0.9"/>
+  <text x="860" y="297" font-family="monospace" font-size="16" fill="white" text-anchor="middle">POST /publish</text>
+  
+  <rect x="770" y="340" width="180" height="60" rx="6" fill="#f472b6" opacity="0.9"/>
+  <text x="860" y="377" font-family="monospace" font-size="16" fill="white" text-anchor="middle">GET /assets</text>
+  
+  <!-- Connection lines -->
+  <line x1="430" y1="315" x2="480" y2="315" stroke="white" stroke-width="3" opacity="0.5"/>
+  <line x1="720" y1="210" x2="770" y2="210" stroke="white" stroke-width="3" opacity="0.5"/>
+  <line x1="720" y1="290" x2="770" y2="290" stroke="white" stroke-width="3" opacity="0.5"/>
+  <line x1="720" y1="370" x2="770" y2="370" stroke="white" stroke-width="3" opacity="0.5"/>
+  
+  <!-- Title -->
+  <text x="600" y="580" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">
+    Quark MCP Server
+  </text>
+</svg>

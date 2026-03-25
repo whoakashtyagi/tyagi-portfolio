@@ -45,7 +45,7 @@ const social: Social = [
 
 const home: Home = {
   path: "/",
-  image: "/images/og/home.jpg",
+  image: "/images/og/home.svg",
   label: "Home",
   title: `${person.name} – Backend Engineer`,
   description: `Portfolio showcasing 4+ years of distributed systems, microservices, and AI integration work`,

@@ -1,0 +1,48 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fa709a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fee140;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad5)"/>
+  
+  <!-- Keycloak shield -->
+  <path d="M 600 120 L 720 160 L 720 300 Q 720 380 600 420 Q 480 380 480 300 L 480 160 Z" 
+        fill="white" opacity="0.2" stroke="white" stroke-width="3"/>
+  
+  <!-- Lock icon in shield -->
+  <rect x="575" y="240" width="50" height="60" rx="8" fill="white" opacity="0.4"/>
+  <circle cx="600" cy="220" r="25" fill="none" stroke="white" stroke-width="5" opacity="0.4"/>
+  <circle cx="600" cy="270" r="8" fill="white" opacity="0.6"/>
+  
+  <!-- Service nodes connected to SSO -->
+  <circle cx="400" cy="480" r="40" fill="#3b82f6" opacity="0.8"/>
+  <text x="400" y="490" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">S1</text>
+  
+  <circle cx="520" cy="520" r="40" fill="#3b82f6" opacity="0.8"/>
+  <text x="520" y="530" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">S2</text>
+  
+  <circle cx="600" cy="540" r="40" fill="#3b82f6" opacity="0.8"/>
+  <text x="600" y="550" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">S3</text>
+  
+  <circle cx="680" cy="520" r="40" fill="#3b82f6" opacity="0.8"/>
+  <text x="680" y="530" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">S4</text>
+  
+  <circle cx="800" cy="480" r="40" fill="#3b82f6" opacity="0.8"/>
+  <text x="800" y="490" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">S5</text>
+  
+  <!-- Connection lines -->
+  <line x1="430" y1="460" x2="560" y2="380" stroke="white" stroke-width="2" opacity="0.5"/>
+  <line x1="540" y1="500" x2="580" y2="430" stroke="white" stroke-width="2" opacity="0.5"/>
+  <line x1="600" y1="500" x2="600" y2="420" stroke="white" stroke-width="2" opacity="0.5"/>
+  <line x1="660" y1="500" x2="620" y2="430" stroke="white" stroke-width="2" opacity="0.5"/>
+  <line x1="770" y1="460" x2="640" y2="380" stroke="white" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Title -->
+  <text x="600" y="90" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">
+    Keycloak SSO Migration
+  </text>
+</svg>
