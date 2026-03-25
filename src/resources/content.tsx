@@ -49,7 +49,7 @@ const home: Home = {
   label: "Home",
   title: `${person.name} – Backend Engineer`,
   description: `Backend engineer at Quark building distributed systems, microservices, and AI features`,
-  headline: <>Building backend systems that actually work at scale</>,
+  headline: <>Backend Engineer focused on scale and reliability</>,
   featured: {
     display: true,
     title: (
@@ -65,10 +65,8 @@ const home: Home = {
   },
   subline: (
     <>
-      I'm a backend engineer at Quark, where I've spent 4+ years building enterprise SaaS infrastructure. <br />
-      I work mostly with Java and Spring Boot, but the language isn't the interesting part — it's the system design, 
-      the failure modes, the scaling path. <br />
-      Recently I've been integrating AI into actual production features, not demos.
+      I build and design enterprise systems at Quark, solving for performance, failure, and growth. <br />
+      Lately, I've been working on integrating AI into real production workflows.
     </>
   ),
 };
