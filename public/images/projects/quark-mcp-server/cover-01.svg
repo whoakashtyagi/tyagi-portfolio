@@ -1,42 +1,149 @@
 <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#11998e;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#38ef7d;stop-opacity:1" />
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#1a2233"/>
     </linearGradient>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#38bdf8"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#475569"/>
+    </marker>
   </defs>
-  
+
   <!-- Background -->
-  <rect width="1200" height="630" fill="url(#bgGrad2)"/>
-  
-  <!-- AI Agent representation -->
-  <circle cx="350" cy="315" r="80" fill="white" opacity="0.2"/>
-  <circle cx="350" cy="315" r="60" fill="white" opacity="0.3"/>
-  <text x="350" y="335" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">AI</text>
-  
-  <!-- MCP Protocol layer -->
-  <rect x="480" y="250" width="240" height="130" rx="8" fill="white" opacity="0.25"/>
-  <text x="600" y="295" font-family="monospace" font-size="24" font-weight="bold" fill="white" text-anchor="middle">MCP</text>
-  <text x="600" y="330" font-family="monospace" font-size="18" fill="white" text-anchor="middle" opacity="0.9">Protocol</text>
-  
-  <!-- API endpoints -->
-  <rect x="770" y="180" width="180" height="60" rx="6" fill="#60a5fa" opacity="0.9"/>
-  <text x="860" y="217" font-family="monospace" font-size="16" fill="white" text-anchor="middle">GET /content</text>
-  
-  <rect x="770" y="260" width="180" height="60" rx="6" fill="#a78bfa" opacity="0.9"/>
-  <text x="860" y="297" font-family="monospace" font-size="16" fill="white" text-anchor="middle">POST /publish</text>
-  
-  <rect x="770" y="340" width="180" height="60" rx="6" fill="#f472b6" opacity="0.9"/>
-  <text x="860" y="377" font-family="monospace" font-size="16" fill="white" text-anchor="middle">GET /assets</text>
-  
-  <!-- Connection lines -->
-  <line x1="430" y1="315" x2="480" y2="315" stroke="white" stroke-width="3" opacity="0.5"/>
-  <line x1="720" y1="210" x2="770" y2="210" stroke="white" stroke-width="3" opacity="0.5"/>
-  <line x1="720" y1="290" x2="770" y2="290" stroke="white" stroke-width="3" opacity="0.5"/>
-  <line x1="720" y1="370" x2="770" y2="370" stroke="white" stroke-width="3" opacity="0.5"/>
-  
-  <!-- Title -->
-  <text x="600" y="580" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">
-    Quark MCP Server
-  </text>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Top badge -->
+  <rect x="475" y="16" width="250" height="26" rx="13" fill="#0ea5e9" fill-opacity="0.12" stroke="#0ea5e9" stroke-width="1"/>
+  <text x="600" y="34" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#38bdf8" text-anchor="middle" letter-spacing="1.5">MODEL CONTEXT PROTOCOL</text>
+
+  <!-- ═══════════════════════════ LEFT: AI CONSUMERS ═══════════════════════════ -->
+  <rect x="25" y="190" width="205" height="250" rx="12" fill="#161b22" stroke="#21262d" stroke-width="1.5"/>
+  <text x="127" y="214" font-family="-apple-system, system-ui, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle" letter-spacing="1.5" font-weight="600">AI CONSUMERS</text>
+
+  <!-- LLM Agent -->
+  <rect x="44" y="225" width="167" height="52" rx="8" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+  <rect x="44" y="225" width="5" height="52" rx="2" fill="#6366f1"/>
+  <text x="69" y="249" font-family="-apple-system, system-ui, sans-serif" font-size="12" font-weight="600" fill="#c9d1d9">LLM Agent</text>
+  <text x="69" y="267" font-family="-apple-system, system-ui, sans-serif" font-size="10" fill="#6b7280">Claude · GPT-4 · Gemini</text>
+
+  <!-- IDE Agent -->
+  <rect x="44" y="289" width="167" height="52" rx="8" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+  <rect x="44" y="289" width="5" height="52" rx="2" fill="#0ea5e9"/>
+  <text x="69" y="313" font-family="-apple-system, system-ui, sans-serif" font-size="12" font-weight="600" fill="#c9d1d9">IDE Agent</text>
+  <text x="69" y="331" font-family="-apple-system, system-ui, sans-serif" font-size="10" fill="#6b7280">Cursor · Windsurf</text>
+
+  <!-- Custom Agent -->
+  <rect x="44" y="353" width="167" height="52" rx="8" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+  <rect x="44" y="353" width="5" height="52" rx="2" fill="#34d399"/>
+  <text x="69" y="377" font-family="-apple-system, system-ui, sans-serif" font-size="12" font-weight="600" fill="#c9d1d9">Custom Agent</text>
+  <text x="69" y="395" font-family="-apple-system, system-ui, sans-serif" font-size="10" fill="#6b7280">Workflow automation</text>
+
+  <!-- Arrow: AI → MCP -->
+  <line x1="230" y1="315" x2="379" y2="315" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="304" y="306" font-family="monospace" font-size="10" fill="#38bdf8" text-anchor="middle">MCP Protocol</text>
+
+  <!-- ═══════════════════════════ CENTER: MCP SERVER ═══════════════════════════ -->
+  <rect x="380" y="58" width="440" height="504" rx="14" fill="#161b22" stroke="#0ea5e9" stroke-width="1.5"/>
+
+  <!-- Server title badge -->
+  <rect x="468" y="70" width="264" height="32" rx="8" fill="#0ea5e9" fill-opacity="0.12" stroke="#0ea5e9" stroke-width="1"/>
+  <text x="600" y="92" font-family="-apple-system, system-ui, sans-serif" font-size="17" font-weight="700" fill="#38bdf8" text-anchor="middle">MCP Server</text>
+
+  <!-- Tool Registry -->
+  <rect x="400" y="120" width="400" height="84" rx="8" fill="#0d1117" stroke="#21262d" stroke-width="1"/>
+  <rect x="400" y="120" width="5" height="84" rx="2" fill="#6366f1"/>
+  <text x="424" y="146" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="600" fill="#c9d1d9">Tool Registry</text>
+  <text x="424" y="165" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#6b7280">Named tool definitions with input/output schemas</text>
+  <text x="424" y="181" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#6b7280">Semantic descriptions for agent tool selection</text>
+  <rect x="628" y="131" width="104" height="18" rx="4" fill="#6366f1" fill-opacity="0.18"/>
+  <text x="680" y="144" font-family="monospace" font-size="10" fill="#a5b4fc" text-anchor="middle">create_section</text>
+  <rect x="628" y="154" width="104" height="18" rx="4" fill="#6366f1" fill-opacity="0.18"/>
+  <text x="680" y="167" font-family="monospace" font-size="10" fill="#a5b4fc" text-anchor="middle">trigger_publish</text>
+  <rect x="628" y="177" width="104" height="18" rx="4" fill="#6366f1" fill-opacity="0.18"/>
+  <text x="680" y="190" font-family="monospace" font-size="10" fill="#a5b4fc" text-anchor="middle">query_status</text>
+
+  <!-- Schema Converter -->
+  <rect x="400" y="218" width="400" height="84" rx="8" fill="#0d1117" stroke="#21262d" stroke-width="1"/>
+  <rect x="400" y="218" width="5" height="84" rx="2" fill="#0ea5e9"/>
+  <text x="424" y="244" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="600" fill="#c9d1d9">Schema Converter</text>
+  <text x="424" y="263" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#6b7280">Converts OpenAPI specs → MCP tool definitions</text>
+  <text x="424" y="279" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#6b7280">Type mapping, validation &amp; parameter docs</text>
+  <text x="682" y="278" font-family="monospace" font-size="30" fill="#0ea5e9" fill-opacity="0.25" text-anchor="middle">{ }</text>
+
+  <!-- Auth Proxy -->
+  <rect x="400" y="316" width="400" height="84" rx="8" fill="#0d1117" stroke="#21262d" stroke-width="1"/>
+  <rect x="400" y="316" width="5" height="84" rx="2" fill="#f472b6"/>
+  <text x="424" y="342" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="600" fill="#c9d1d9">Auth Proxy</text>
+  <text x="424" y="361" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#6b7280">OAuth 2.0 token resolution &amp; injection</text>
+  <text x="424" y="377" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#6b7280">Permission enforcement before API calls</text>
+  <rect x="627" y="328" width="108" height="18" rx="4" fill="#f472b6" fill-opacity="0.15"/>
+  <text x="681" y="341" font-family="monospace" font-size="10" fill="#f9a8d4" text-anchor="middle">Bearer Token</text>
+  <rect x="627" y="351" width="108" height="18" rx="4" fill="#f472b6" fill-opacity="0.15"/>
+  <text x="681" y="364" font-family="monospace" font-size="10" fill="#f9a8d4" text-anchor="middle">403 / 200 OK</text>
+  <rect x="627" y="374" width="108" height="18" rx="4" fill="#f472b6" fill-opacity="0.15"/>
+  <text x="681" y="387" font-family="monospace" font-size="10" fill="#f9a8d4" text-anchor="middle">rate limiting</text>
+
+  <!-- Response Formatter -->
+  <rect x="400" y="414" width="400" height="84" rx="8" fill="#0d1117" stroke="#21262d" stroke-width="1"/>
+  <rect x="400" y="414" width="5" height="84" rx="2" fill="#34d399"/>
+  <text x="424" y="440" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="600" fill="#c9d1d9">Response Formatter</text>
+  <text x="424" y="459" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#6b7280">Simplifies nested API responses for agents</text>
+  <text x="424" y="475" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#6b7280">Structured output with human-readable summaries</text>
+  <rect x="627" y="426" width="108" height="18" rx="4" fill="#34d399" fill-opacity="0.15"/>
+  <text x="681" y="439" font-family="monospace" font-size="10" fill="#6ee7b7" text-anchor="middle">status: published</text>
+  <rect x="627" y="449" width="108" height="18" rx="4" fill="#34d399" fill-opacity="0.15"/>
+  <text x="681" y="462" font-family="monospace" font-size="10" fill="#6ee7b7" text-anchor="middle">3 docs updated</text>
+
+  <!-- Arrow: MCP → Services -->
+  <line x1="820" y1="315" x2="908" y2="315" stroke="#475569" stroke-width="2" marker-end="url(#arrowGray)"/>
+  <text x="864" y="306" font-family="monospace" font-size="10" fill="#6b7280" text-anchor="middle">REST / HTTP</text>
+
+  <!-- Fan-out: vertical connector -->
+  <line x1="910" y1="315" x2="930" y2="315" stroke="#475569" stroke-width="2"/>
+  <line x1="930" y1="165" x2="930" y2="455" stroke="#30363d" stroke-width="1.5"/>
+  <circle cx="930" cy="315" r="3" fill="#475569"/>
+
+  <!-- Stubs to each service -->
+  <line x1="930" y1="165" x2="950" y2="165" stroke="#30363d" stroke-width="1.5"/>
+  <line x1="930" y1="260" x2="950" y2="260" stroke="#30363d" stroke-width="1.5"/>
+  <line x1="930" y1="357" x2="950" y2="357" stroke="#30363d" stroke-width="1.5"/>
+  <line x1="930" y1="455" x2="950" y2="455" stroke="#30363d" stroke-width="1.5"/>
+
+  <!-- ═══════════════════════════ RIGHT: PLATFORM SERVICES ═══════════════════════════ -->
+  <text x="1070" y="110" font-family="-apple-system, system-ui, sans-serif" font-size="10" fill="#6b7280" text-anchor="middle" letter-spacing="1.5" font-weight="600">PLATFORM SERVICES</text>
+
+  <!-- Content Service (center y=165) -->
+  <rect x="950" y="128" width="235" height="74" rx="8" fill="#161b22" stroke="#21262d" stroke-width="1.5"/>
+  <rect x="950" y="128" width="5" height="74" rx="2" fill="#60a5fa"/>
+  <text x="974" y="154" font-family="-apple-system, system-ui, sans-serif" font-size="12" font-weight="600" fill="#e2e8f0">Content Service</text>
+  <text x="974" y="172" font-family="monospace" font-size="10" fill="#6b7280">POST /content/sections</text>
+  <text x="974" y="188" font-family="monospace" font-size="10" fill="#6b7280">GET  /documents</text>
+
+  <!-- Publishing Service (center y=260) -->
+  <rect x="950" y="223" width="235" height="74" rx="8" fill="#161b22" stroke="#21262d" stroke-width="1.5"/>
+  <rect x="950" y="223" width="5" height="74" rx="2" fill="#a78bfa"/>
+  <text x="974" y="249" font-family="-apple-system, system-ui, sans-serif" font-size="12" font-weight="600" fill="#e2e8f0">Publishing Service</text>
+  <text x="974" y="267" font-family="monospace" font-size="10" fill="#6b7280">POST /workflows/trigger</text>
+  <text x="974" y="283" font-family="monospace" font-size="10" fill="#6b7280">GET  /jobs/{id}/status</text>
+
+  <!-- Asset Service (center y=357) -->
+  <rect x="950" y="320" width="235" height="74" rx="8" fill="#161b22" stroke="#21262d" stroke-width="1.5"/>
+  <rect x="950" y="320" width="5" height="74" rx="2" fill="#f472b6"/>
+  <text x="974" y="346" font-family="-apple-system, system-ui, sans-serif" font-size="12" font-weight="600" fill="#e2e8f0">Asset Service</text>
+  <text x="974" y="364" font-family="monospace" font-size="10" fill="#6b7280">GET  /assets/search</text>
+  <text x="974" y="380" font-family="monospace" font-size="10" fill="#6b7280">GET  /assets/{id}/meta</text>
+
+  <!-- Auth Service (center y=455) -->
+  <rect x="950" y="418" width="235" height="74" rx="8" fill="#161b22" stroke="#21262d" stroke-width="1.5"/>
+  <rect x="950" y="418" width="5" height="74" rx="2" fill="#34d399"/>
+  <text x="974" y="444" font-family="-apple-system, system-ui, sans-serif" font-size="12" font-weight="600" fill="#e2e8f0">Auth Service</text>
+  <text x="974" y="462" font-family="monospace" font-size="10" fill="#6b7280">GET  /permissions</text>
+  <text x="974" y="478" font-family="monospace" font-size="10" fill="#6b7280">POST /tokens/validate</text>
+
+  <!-- ═══════════════════════════ BOTTOM TITLE ═══════════════════════════ -->
+  <text x="600" y="590" font-family="-apple-system, system-ui, sans-serif" font-size="20" font-weight="700" fill="#e2e8f0" text-anchor="middle">MCP Server — AI-Native Platform Integration</text>
+  <text x="600" y="613" font-family="-apple-system, system-ui, sans-serif" font-size="12" fill="#6b7280" text-anchor="middle">Tool Registry · Auth Proxy · Schema Conversion · Response Formatting</text>
 </svg>

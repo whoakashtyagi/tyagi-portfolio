@@ -1,48 +1,311 @@
-<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
   <defs>
-    <linearGradient id="bgGrad5" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#fa709a;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#fee140;stop-opacity:1" />
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1a"/>
+      <stop offset="100%" stop-color="#0e1520"/>
     </linearGradient>
+    <linearGradient id="topBar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e8830a"/>
+      <stop offset="40%" stop-color="#c45e09"/>
+      <stop offset="100%" stop-color="#2ea043"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="200" cy="60" r="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e8830a" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#e8830a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="1000" cy="580" r="350" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2ea043" stop-opacity="0.09"/>
+      <stop offset="100%" stop-color="#2ea043" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Arrow markers -->
+    <marker id="mOrange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#e8830a"/>
+    </marker>
+    <marker id="mGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3fb950"/>
+    </marker>
+    <marker id="mBlue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#388bfd"/>
+    </marker>
+    <marker id="mGray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6e7681"/>
+    </marker>
+    <marker id="mPurple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#bc8cff"/>
+    </marker>
+    <marker id="mOrangeSm" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="0 0, 8 3, 0 6" fill="#e8830a"/>
+    </marker>
   </defs>
-  
+
   <!-- Background -->
-  <rect width="1200" height="630" fill="url(#bgGrad5)"/>
-  
-  <!-- Keycloak shield -->
-  <path d="M 600 120 L 720 160 L 720 300 Q 720 380 600 420 Q 480 380 480 300 L 480 160 Z" 
-        fill="white" opacity="0.2" stroke="white" stroke-width="3"/>
-  
-  <!-- Lock icon in shield -->
-  <rect x="575" y="240" width="50" height="60" rx="8" fill="white" opacity="0.4"/>
-  <circle cx="600" cy="220" r="25" fill="none" stroke="white" stroke-width="5" opacity="0.4"/>
-  <circle cx="600" cy="270" r="8" fill="white" opacity="0.6"/>
-  
-  <!-- Service nodes connected to SSO -->
-  <circle cx="400" cy="480" r="40" fill="#3b82f6" opacity="0.8"/>
-  <text x="400" y="490" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">S1</text>
-  
-  <circle cx="520" cy="520" r="40" fill="#3b82f6" opacity="0.8"/>
-  <text x="520" y="530" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">S2</text>
-  
-  <circle cx="600" cy="540" r="40" fill="#3b82f6" opacity="0.8"/>
-  <text x="600" y="550" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">S3</text>
-  
-  <circle cx="680" cy="520" r="40" fill="#3b82f6" opacity="0.8"/>
-  <text x="680" y="530" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">S4</text>
-  
-  <circle cx="800" cy="480" r="40" fill="#3b82f6" opacity="0.8"/>
-  <text x="800" y="490" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">S5</text>
-  
-  <!-- Connection lines -->
-  <line x1="430" y1="460" x2="560" y2="380" stroke="white" stroke-width="2" opacity="0.5"/>
-  <line x1="540" y1="500" x2="580" y2="430" stroke="white" stroke-width="2" opacity="0.5"/>
-  <line x1="600" y1="500" x2="600" y2="420" stroke="white" stroke-width="2" opacity="0.5"/>
-  <line x1="660" y1="500" x2="620" y2="430" stroke="white" stroke-width="2" opacity="0.5"/>
-  <line x1="770" y1="460" x2="640" y2="380" stroke="white" stroke-width="2" opacity="0.5"/>
-  
-  <!-- Title -->
-  <text x="600" y="90" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">
-    Keycloak SSO Migration
-  </text>
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <!-- Top accent bar -->
+  <rect width="1200" height="3" fill="url(#topBar)"/>
+
+  <!-- ====== HEADER ====== -->
+  <text x="60" y="50" font-size="22" font-weight="700" fill="#e6edf3" letter-spacing="-0.3">Enterprise SSO Migration with Keycloak</text>
+  <text x="60" y="73" font-size="11" fill="#6e7681">Keycloak · OAuth 2.0 · SAML 2.0 · Java · Spring Security · PostgreSQL · Docker</text>
+
+  <!-- Recognition badge -->
+  <rect x="960" y="34" width="180" height="50" rx="8" fill="#1a1200" stroke="#e3b341" stroke-width="1.5"/>
+  <text x="1050" y="54" font-size="9" fill="#e3b341" text-anchor="middle" font-weight="600" letter-spacing="1">RECOGNITION</text>
+  <text x="1050" y="72" font-size="13" fill="#e3b341" text-anchor="middle" font-weight="700">Employee of Quarter</text>
+
+  <!-- Header divider -->
+  <line x1="60" y1="96" x2="1140" y2="96" stroke="#21262d" stroke-width="1"/>
+
+  <!-- ====== SECTION LABEL ====== -->
+  <text x="600" y="120" font-size="9.5" fill="#484f58" text-anchor="middle" letter-spacing="2.5" font-weight="600">AUTHENTICATION ARCHITECTURE</text>
+
+  <!-- ============================================================ -->
+  <!-- ROW 1: Client → Keycloak → Services (main flow) -->
+  <!-- ============================================================ -->
+
+  <!-- [1] User / Client Browser (x=50, y=138, w=155, h=90) -->
+  <rect x="50" y="138" width="155" height="90" rx="10" fill="#0d1f3c" stroke="#388bfd" stroke-width="1.5"/>
+  <!-- browser icon -->
+  <rect x="66" y="147" width="18" height="14" rx="2" fill="none" stroke="#388bfd" stroke-width="1.2"/>
+  <line x1="66" y1="152" x2="84" y2="152" stroke="#388bfd" stroke-width="1.0"/>
+  <circle cx="69" cy="149.5" r="1" fill="#388bfd"/>
+  <circle cx="73" cy="149.5" r="1" fill="#388bfd"/>
+  <circle cx="77" cy="149.5" r="1" fill="#388bfd"/>
+  <text x="91" y="157" font-size="11" font-weight="700" fill="#e6edf3">Client</text>
+  <text x="91" y="170" font-size="11" font-weight="700" fill="#388bfd">Browser</text>
+  <text x="127" y="192" font-size="9" fill="#6e7681" text-anchor="middle">Login Request</text>
+  <text x="127" y="205" font-size="9" fill="#6e7681" text-anchor="middle">JWT Bearer Token</text>
+  <text x="127" y="218" font-size="9" fill="#6e7681" text-anchor="middle">SAML Assertion</text>
+
+  <!-- Arrow: Client → Keycloak (OAuth/SAML) -->
+  <line x1="206" y1="183" x2="298" y2="183" stroke="#e8830a" stroke-width="1.8" marker-end="url(#mOrange)"/>
+  <text x="252" y="176" font-size="8.5" fill="#e8830a" text-anchor="middle">OAuth 2.0 / SAML</text>
+
+  <!-- [2] Keycloak IdP (x=300, y=128, w=200, h=110) — center hero -->
+  <rect x="300" y="128" width="200" height="110" rx="10" fill="#1d0f00" stroke="#e8830a" stroke-width="2"/>
+  <!-- Keycloak flame icon (simplified) -->
+  <path d="M348,140 Q352,134 358,137 Q356,130 363,132 Q360,126 368,127 Q369,135 364,140 Q368,139 370,143 Q364,142 363,148 Q357,142 352,147 Q353,140 348,140 Z" fill="#e8830a" opacity="0.85"/>
+  <text x="379" y="148" font-size="13" font-weight="800" fill="#e8830a">Keycloak</text>
+  <text x="379" y="163" font-size="10.5" font-weight="600" fill="#c97a10">Identity Provider</text>
+  <text x="400" y="185" font-size="9" fill="#6e7681" text-anchor="middle">Realm: app-platform</text>
+  <text x="400" y="199" font-size="9" fill="#6e7681" text-anchor="middle">JWT Signing · TOTP MFA</text>
+  <text x="400" y="213" font-size="9" fill="#6e7681" text-anchor="middle">User Federation · RBAC</text>
+  <text x="400" y="227" font-size="9" fill="#6e7681" text-anchor="middle">Client Credentials Flow</text>
+
+  <!-- Arrow: Keycloak → Services cluster (right) label only, lines drawn below -->
+  <line x1="501" y1="183" x2="562" y2="183" stroke="#3fb950" stroke-width="1.8" marker-end="url(#mGreen)"/>
+  <text x="531" y="176" font-size="8.5" fill="#3fb950" text-anchor="middle">JWT (signed)</text>
+
+  <!-- [3] Microservices Cluster (x=565, y=128, w=420, h=110) -->
+  <rect x="565" y="128" width="420" height="110" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+  <text x="775" y="147" font-size="10" fill="#484f58" text-anchor="middle" letter-spacing="1.8" font-weight="600">MICROSERVICES (6+)</text>
+
+  <!-- Service boxes inside cluster (3 per row, small) -->
+  <!-- Row 1: 3 services -->
+  <!-- Svc 1 -->
+  <rect x="578" y="153" width="108" height="36" rx="6" fill="#0d1f3c" stroke="#388bfd" stroke-width="1"/>
+  <text x="632" y="167" font-size="9" font-weight="600" fill="#388bfd" text-anchor="middle">Content Service</text>
+  <text x="632" y="180" font-size="8" fill="#6e7681" text-anchor="middle">Spring Security</text>
+  <!-- Svc 2 -->
+  <rect x="698" y="153" width="108" height="36" rx="6" fill="#0d1f3c" stroke="#388bfd" stroke-width="1"/>
+  <text x="752" y="167" font-size="9" font-weight="600" fill="#388bfd" text-anchor="middle">Asset Service</text>
+  <text x="752" y="180" font-size="8" fill="#6e7681" text-anchor="middle">Spring Security</text>
+  <!-- Svc 3 -->
+  <rect x="818" y="153" width="108" height="36" rx="6" fill="#0d1f3c" stroke="#388bfd" stroke-width="1"/>
+  <text x="872" y="167" font-size="9" font-weight="600" fill="#388bfd" text-anchor="middle">User Service</text>
+  <text x="872" y="180" font-size="8" fill="#6e7681" text-anchor="middle">Spring Security</text>
+  <!-- Row 2: 3 services -->
+  <rect x="578" y="196" width="108" height="36" rx="6" fill="#0d1f3c" stroke="#388bfd" stroke-width="1"/>
+  <text x="632" y="210" font-size="9" font-weight="600" fill="#388bfd" text-anchor="middle">Publish Service</text>
+  <text x="632" y="223" font-size="8" fill="#6e7681" text-anchor="middle">JWT Validation</text>
+  <rect x="698" y="196" width="108" height="36" rx="6" fill="#0d1f3c" stroke="#388bfd" stroke-width="1"/>
+  <text x="752" y="210" font-size="9" font-weight="600" fill="#388bfd" text-anchor="middle">Notify Service</text>
+  <text x="752" y="223" font-size="8" fill="#6e7681" text-anchor="middle">JWT Validation</text>
+  <rect x="818" y="196" width="108" height="36" rx="6" fill="#0d1f3c" stroke="#388bfd" stroke-width="1"/>
+  <text x="872" y="210" font-size="9" font-weight="600" fill="#388bfd" text-anchor="middle">+2 Services</text>
+  <text x="872" y="223" font-size="8" fill="#6e7681" text-anchor="middle">JWT Validation</text>
+
+  <!-- Services public key fetch (dotted down) -->
+  <line x1="775" y1="239" x2="775" y2="258" stroke="#6e7681" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="775" y="270" font-size="8" fill="#484f58" text-anchor="middle">fetch public key (startup)</text>
+
+  <!-- ============================================================ -->
+  <!-- ROW 2: Supporting components -->
+  <!-- ============================================================ -->
+
+  <!-- [4] Enterprise IdPs (x=50, y=310, w=155, h=100) -->
+  <rect x="50" y="310" width="155" height="100" rx="10" fill="#14111e" stroke="#bc8cff" stroke-width="1.5"/>
+  <!-- shield icon -->
+  <path d="M68,320 L80,316 L92,320 L92,334 Q80,342 68,334 Z" fill="none" stroke="#bc8cff" stroke-width="1.2"/>
+  <text x="99" y="329" font-size="10" font-weight="700" fill="#e6edf3">Enterprise</text>
+  <text x="99" y="342" font-size="10" font-weight="700" fill="#bc8cff">IdPs</text>
+  <text x="127" y="364" font-size="9" fill="#6e7681" text-anchor="middle">Okta</text>
+  <text x="127" y="378" font-size="9" fill="#6e7681" text-anchor="middle">Azure AD</text>
+  <text x="127" y="392" font-size="9" fill="#6e7681" text-anchor="middle">SAML 2.0 SP/IdP</text>
+
+  <!-- Arrow: Enterprise IdPs → Keycloak (SAML) -->
+  <path d="M 205 360 Q 260 360 300 280" fill="none" stroke="#bc8cff" stroke-width="1.4" stroke-dasharray="5,3" marker-end="url(#mPurple)"/>
+  <text x="237" y="350" font-size="8" fill="#bc8cff" text-anchor="middle">SAML Assertion</text>
+
+  <!-- [5] PostgreSQL User Store (x=300, y=310, w=200, h=100) -->
+  <rect x="300" y="310" width="200" height="100" rx="10" fill="#0d1520" stroke="#4a9bf5" stroke-width="1.5"/>
+  <!-- db icon -->
+  <ellipse cx="322" cy="323" rx="10" ry="4" fill="none" stroke="#4a9bf5" stroke-width="1.2"/>
+  <line x1="312" y1="323" x2="312" y2="339" stroke="#4a9bf5" stroke-width="1.2"/>
+  <line x1="332" y1="323" x2="332" y2="339" stroke="#4a9bf5" stroke-width="1.2"/>
+  <ellipse cx="322" cy="339" rx="10" ry="4" fill="none" stroke="#4a9bf5" stroke-width="1.2"/>
+  <path d="M312,331 Q322,334.5 332,331" fill="none" stroke="#4a9bf5" stroke-width="0.8"/>
+  <text x="342" y="330" font-size="11" font-weight="700" fill="#e6edf3">PostgreSQL</text>
+  <text x="342" y="344" font-size="10" font-weight="600" fill="#4a9bf5">User Store</text>
+  <text x="400" y="366" font-size="9" fill="#6e7681" text-anchor="middle">Keycloak User DB</text>
+  <text x="400" y="380" font-size="9" fill="#3fb950" text-anchor="middle">Migrated bcrypt hashes</text>
+  <text x="400" y="394" font-size="9" fill="#3fb950" text-anchor="middle">Zero password resets</text>
+
+  <!-- Double-headed arrow: Keycloak ↔ PostgreSQL -->
+  <line x1="400" y1="239" x2="400" y2="308" stroke="#4a9bf5" stroke-width="1.4" marker-end="url(#mBlue)"/>
+  <line x1="392" y1="308" x2="392" y2="239" stroke="#4a9bf5" stroke-width="1.4" marker-end="url(#mBlue)"/>
+
+  <!-- [6] Migration Phases (x=565, y=310, w=420, h=100) -->
+  <rect x="565" y="310" width="420" height="100" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+  <text x="775" y="330" font-size="9.5" fill="#484f58" text-anchor="middle" letter-spacing="1.5" font-weight="600">MIGRATION TIMELINE (10 WEEKS)</text>
+
+  <!-- Phase boxes -->
+  <!-- Phase 1 -->
+  <rect x="578" y="337" width="86" height="62" rx="6" fill="#0d1f18" stroke="#3fb950" stroke-width="1"/>
+  <text x="621" y="352" font-size="8.5" font-weight="700" fill="#3fb950" text-anchor="middle">Phase 1</text>
+  <text x="621" y="363" font-size="7.5" fill="#6e7681" text-anchor="middle">Keycloak Setup</text>
+  <text x="621" y="374" font-size="7.5" fill="#6e7681" text-anchor="middle">User Migration</text>
+  <text x="621" y="385" font-size="7.5" fill="#3fb950" text-anchor="middle">2 weeks</text>
+  <text x="621" y="393" font-size="7" fill="#484f58" text-anchor="middle">hash import</text>
+
+  <!-- Arrow Phase 1 → 2 -->
+  <line x1="665" y1="368" x2="673" y2="368" stroke="#6e7681" stroke-width="1" marker-end="url(#mGray)"/>
+
+  <!-- Phase 2 -->
+  <rect x="675" y="337" width="86" height="62" rx="6" fill="#1a1200" stroke="#e3b341" stroke-width="1"/>
+  <text x="718" y="352" font-size="8.5" font-weight="700" fill="#e3b341" text-anchor="middle">Phase 2</text>
+  <text x="718" y="363" font-size="7.5" fill="#6e7681" text-anchor="middle">Parallel Auth</text>
+  <text x="718" y="374" font-size="7.5" fill="#6e7681" text-anchor="middle">Dual JWT +</text>
+  <text x="718" y="385" font-size="7.5" fill="#e3b341" text-anchor="middle">4 weeks</text>
+  <text x="718" y="393" font-size="7" fill="#484f58" text-anchor="middle">legacy session</text>
+
+  <!-- Arrow Phase 2 → 3 -->
+  <line x1="762" y1="368" x2="770" y2="368" stroke="#6e7681" stroke-width="1" marker-end="url(#mGray)"/>
+
+  <!-- Phase 3 -->
+  <rect x="772" y="337" width="86" height="62" rx="6" fill="#0d1f3c" stroke="#388bfd" stroke-width="1"/>
+  <text x="815" y="352" font-size="8.5" font-weight="700" fill="#388bfd" text-anchor="middle">Phase 3</text>
+  <text x="815" y="363" font-size="7.5" fill="#6e7681" text-anchor="middle">Traffic Cutover</text>
+  <text x="815" y="374" font-size="7.5" fill="#6e7681" text-anchor="middle">Login → Keycloak</text>
+  <text x="815" y="385" font-size="7.5" fill="#388bfd" text-anchor="middle">2 weeks</text>
+  <text x="815" y="393" font-size="7" fill="#484f58" text-anchor="middle">TTL wind-down</text>
+
+  <!-- Arrow Phase 3 → 4 -->
+  <line x1="859" y1="368" x2="867" y2="368" stroke="#6e7681" stroke-width="1" marker-end="url(#mGray)"/>
+
+  <!-- Phase 4 -->
+  <rect x="869" y="337" width="86" height="62" rx="6" fill="#0d1f18" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="912" y="352" font-size="8.5" font-weight="700" fill="#3fb950" text-anchor="middle">Phase 4</text>
+  <text x="912" y="363" font-size="7.5" fill="#6e7681" text-anchor="middle">Decommission</text>
+  <text x="912" y="374" font-size="7.5" fill="#6e7681" text-anchor="middle">Legacy auth drop</text>
+  <text x="912" y="385" font-size="7.5" fill="#3fb950" text-anchor="middle">2 weeks</text>
+  <text x="912" y="393" font-size="7" fill="#3fb950" text-anchor="middle">zero incidents</text>
+
+  <!-- ============================================================ -->
+  <!-- ROW 3: MFA + Performance + Dual Auth detail -->
+  <!-- ============================================================ -->
+
+  <!-- Left spacer / dual auth panel (x=50, y=440, w=155, h=155) -->
+  <rect x="50" y="440" width="155" height="155" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1" stroke-dasharray="5,4"/>
+  <text x="127" y="459" font-size="9.5" fill="#e3b341" text-anchor="middle" font-weight="600">DUAL AUTH FILTER</text>
+  <text x="127" y="473" font-size="8" fill="#6e7681" text-anchor="middle">(Parallel Period)</text>
+  <!-- pseudo-code block -->
+  <rect x="60" y="480" width="135" height="104" rx="5" fill="#0d1117"/>
+  <text x="68" y="494" font-size="8" fill="#6e7681" font-family="monospace">if keycloakJWT</text>
+  <text x="68" y="506" font-size="8" fill="#3fb950" font-family="monospace">  → JWT path ✓</text>
+  <text x="68" y="518" font-size="8" fill="#6e7681" font-family="monospace">elif legacySession</text>
+  <text x="68" y="530" font-size="8" fill="#e3b341" font-family="monospace">  → DB lookup ←</text>
+  <text x="68" y="542" font-size="8" fill="#6e7681" font-family="monospace">else</text>
+  <text x="68" y="554" font-size="8" fill="#f85149" font-family="monospace">  → 401 Unauth</text>
+  <text x="68" y="568" font-size="8" fill="#484f58" font-family="monospace">OncePerRequestFilter</text>
+  <text x="68" y="576" font-size="8" fill="#484f58" font-family="monospace">Spring Security</text>
+
+  <!-- MFA panel (x=300, y=440, w=200, h=155) -->
+  <rect x="300" y="440" width="200" height="155" rx="10" fill="#14111e" stroke="#bc8cff" stroke-width="1.5"/>
+  <!-- lock icon -->
+  <rect x="318" y="452" width="14" height="11" rx="2" fill="none" stroke="#bc8cff" stroke-width="1.2"/>
+  <path d="M322,452 Q322,446 329,446 Q336,446 336,452" fill="none" stroke="#bc8cff" stroke-width="1.2"/>
+  <circle cx="325" cy="458" r="1.5" fill="#bc8cff"/>
+  <line x1="325" y1="459.5" x2="325" y2="462" stroke="#bc8cff" stroke-width="1"/>
+  <text x="341" y="460" font-size="12" font-weight="700" fill="#e6edf3">MFA</text>
+  <text x="341" y="474" font-size="10" font-weight="600" fill="#bc8cff">TOTP Rollout</text>
+  <text x="400" y="497" font-size="9" fill="#6e7681" text-anchor="middle">Google Authenticator</text>
+  <text x="400" y="511" font-size="9" fill="#6e7681" text-anchor="middle">Authy · QR Enrolment</text>
+  <text x="400" y="530" font-size="9" fill="#e6edf3" text-anchor="middle" font-weight="600">Admin users</text>
+  <rect x="330" y="534" width="140" height="12" rx="3" fill="#21262d"/>
+  <rect x="330" y="534" width="140" height="12" rx="3" fill="#3fb950" opacity="0.8"/>
+  <text x="400" y="543" font-size="7.5" fill="#0d1117" text-anchor="middle" font-weight="700">100% adoption</text>
+  <text x="400" y="560" font-size="9" fill="#e6edf3" text-anchor="middle" font-weight="600">Regular users</text>
+  <rect x="330" y="564" width="140" height="12" rx="3" fill="#21262d"/>
+  <rect x="330" y="564" width="56" height="12" rx="3" fill="#e3b341" opacity="0.8"/>
+  <text x="400" y="573" font-size="7.5" fill="#6e7681" text-anchor="middle">~40% opt-in</text>
+  <text x="400" y="588" font-size="8" fill="#bc8cff" text-anchor="middle">Enterprise → IdP MFA</text>
+
+  <!-- Performance / Impact panel (x=565, y=440, w=420, h=155) -->
+  <rect x="565" y="440" width="420" height="155" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+  <text x="775" y="460" font-size="9.5" fill="#484f58" text-anchor="middle" letter-spacing="1.5" font-weight="600">IMPACT &amp; PERFORMANCE</text>
+
+  <!-- Metric 1: JWT vs DB -->
+  <rect x="578" y="468" width="123" height="62" rx="7" fill="#0d1f3c" stroke="#388bfd" stroke-width="1"/>
+  <text x="639" y="483" font-size="9" font-weight="600" fill="#e6edf3" text-anchor="middle">Auth Latency</text>
+  <text x="639" y="500" font-size="18" font-weight="800" fill="#388bfd" text-anchor="middle">&lt;5ms</text>
+  <text x="639" y="514" font-size="8" fill="#6e7681" text-anchor="middle">JWT (was 20-50ms DB)</text>
+  <text x="639" y="524" font-size="8" fill="#3fb950" text-anchor="middle">75% faster ↑</text>
+
+  <!-- Metric 2: Services migrated -->
+  <rect x="714" y="468" width="123" height="62" rx="7" fill="#0d1f18" stroke="#3fb950" stroke-width="1"/>
+  <text x="775" y="483" font-size="9" font-weight="600" fill="#e6edf3" text-anchor="middle">Services</text>
+  <text x="775" y="500" font-size="18" font-weight="800" fill="#3fb950" text-anchor="middle">6+</text>
+  <text x="775" y="514" font-size="8" fill="#6e7681" text-anchor="middle">Migrated Zero Downtime</text>
+  <text x="775" y="524" font-size="8" fill="#3fb950" text-anchor="middle">0 incidents ✓</text>
+
+  <!-- Metric 3: Security -->
+  <rect x="850" y="468" width="123" height="62" rx="7" fill="#14111e" stroke="#bc8cff" stroke-width="1"/>
+  <text x="911" y="483" font-size="9" font-weight="600" fill="#e6edf3" text-anchor="middle">Security</text>
+  <text x="911" y="500" font-size="12" font-weight="800" fill="#bc8cff" text-anchor="middle">SOC2·GDPR</text>
+  <text x="911" y="514" font-size="8" fill="#6e7681" text-anchor="middle">Centralized audit trail</text>
+  <text x="911" y="524" font-size="8" fill="#3fb950" text-anchor="middle">SAML enterprise SSO ✓</text>
+
+  <!-- Bottom details row -->
+  <text x="578" y="554" font-size="8.5" fill="#6e7681">Credential storage</text><text x="660" y="554" font-size="8.5" fill="#3fb950"> bcrypt (uniform)</text>
+  <text x="578" y="567" font-size="8.5" fill="#6e7681">User provisioning</text><text x="660" y="567" font-size="8.5" fill="#3fb950"> 1 DB → all services</text>
+  <text x="578" y="580" font-size="8.5" fill="#6e7681">Rollback strategy</text><text x="660" y="580" font-size="8.5" fill="#e3b341"> feature flag (never used)</text>
+  <text x="750" y="554" font-size="8.5" fill="#6e7681">Password resets</text><text x="828" y="554" font-size="8.5" fill="#3fb950"> centralized API</text>
+  <text x="750" y="567" font-size="8.5" fill="#6e7681">S2S auth</text><text x="800" y="567" font-size="8.5" fill="#388bfd"> Client Credentials Flow</text>
+  <text x="750" y="580" font-size="8.5" fill="#6e7681">Session expiry</text><text x="828" y="580" font-size="8.5" fill="#e3b341"> 30d → 7d → 1d → 0</text>
+
+  <!-- ============================================================ -->
+  <!-- Connecting arrows between rows -->
+  <!-- ============================================================ -->
+
+  <!-- Keycloak → PostgreSQL -->
+  <!-- already drawn above -->
+
+  <!-- Keycloak → MFA (down) -->
+  <line x1="380" y1="239" x2="380" y2="308" stroke="#bc8cff" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#mPurple)"/>
+
+  <!-- Services cluster → Migration Phases (vertical connector) -->
+  <line x1="775" y1="239" x2="775" y2="308" stroke="#6e7681" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#mGray)"/>
+
+  <!-- MFA → keycloak vertical connector (already via Keycloak→MFA line above) -->
+
+  <!-- Dual auth filter → migration phases connector (horizontal) -->
+  <line x1="206" y1="520" x2="298" y2="410" stroke="#e3b341" stroke-width="1" stroke-dasharray="4,3" opacity="0.5" marker-end="url(#mOrangeSm)"/>
+
+  <!-- MFA → Keycloak (vertical upward reference) -->
+  <line x1="420" y1="440" x2="420" y2="412" stroke="#bc8cff" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#mPurple)"/>
+
+  <!-- Impact panel → services cluster (vertical upward) -->
+  <line x1="775" y1="440" x2="775" y2="412" stroke="#6e7681" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#mGray)"/>
 </svg>

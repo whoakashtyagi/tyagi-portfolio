@@ -13,10 +13,10 @@ team:
 
 ## The Problem
 
-Quark's SaaS platform was using **Nalperion** (a third-party licensing vendor) for feature management and license enforcement. The system worked, but had significant limitations:
+The SaaS platform was using **Nalperion** (a third-party licensing vendor) for feature management and license enforcement. The system worked, but had significant limitations:
 
 ### Business Pain Points
-- **Per-tenant licensing fees** — Quark paid per tenant, which scaled badly as the client base grew
+- **Per-tenant licensing fees** — The company paid per tenant, which scaled badly as the client base grew
 - **Inflexible licensing logic** — Vendor's model didn't support custom enterprise deals (e.g., "Tenant A gets Feature X for 6 months, then automatically downgrades")
 - **Integration overhead** — Each new feature required vendor SDK updates and coordination with vendor support
 - **Vendor lock-in** — Changing licensing logic meant waiting on vendor roadmap
@@ -26,7 +26,7 @@ Quark's SaaS platform was using **Nalperion** (a third-party licensing vendor) f
 - **Reliability** — Vendor outages could block core platform functionality
 - **Limited audit trails** — Couldn't query historical license changes without vendor support
 
-The decision: **Build an in-house license manager** that gives Quark full control over licensing logic and eliminates recurring vendor costs.
+The decision: **Build an in-house license manager** that gives full control over licensing logic and eliminates recurring vendor costs.
 
 ## Solution: In-House Multi-Tenant License Manager
 
@@ -216,7 +216,7 @@ Replacing Nalperion without breaking production required careful orchestration:
 
 ### Recognition
 - **Employee of the Quarter** for delivery
-- Became the reference architecture for "build vs buy" decisions at Quark
+- Became the reference architecture for "build vs buy" decisions
 
 ## Design Decisions
 
@@ -248,4 +248,4 @@ Early versions hit the database on every API request. Latency was unacceptable. 
 
 ---
 
-**Key Takeaway**: This project demonstrates my ability to **own greenfield infrastructure from design to production**. The license manager has processed billions of privilege checks without downtime, enabled custom enterprise deals that weren't feasible before, and eliminated a recurring cost center. It's the kind of foundational service that becomes invisible when it works — which is exactly the goal.
+**Key Takeaway**: This project demonstrates my ability to **own greenfield infrastructure from design to production**. The license manager has processed billions of privilege checks without downtime, enabled custom enterprise deals that weren't feasible before, and eliminated a recurring cost center.

@@ -1,44 +1,300 @@
-<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bgGrad8" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#7f7fd5;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#86a8e7;stop-opacity:1" />
+    <!-- Background gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0a0a0f"/>
+      <stop offset="100%" stop-color="#0d0d18"/>
     </linearGradient>
+
+    <!-- Cyan glow -->
+    <radialGradient id="cyanGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Card gradient -->
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <!-- Red accent gradient -->
+    <linearGradient id="redGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+
+    <!-- Cyan accent gradient -->
+    <linearGradient id="cyanGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+
+    <!-- Connector line gradient -->
+    <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#06b6d4" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Grid pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-opacity="0.03" stroke-width="0.5"/>
+    </pattern>
+
+    <!-- Glow filter -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Soft glow filter -->
+    <filter id="softGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Drop shadow -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#06b6d4" flood-opacity="0.2"/>
+    </filter>
   </defs>
-  
+
   <!-- Background -->
-  <rect width="1200" height="630" fill="url(#bgGrad8)"/>
-  
-  <!-- Chat interface mockup -->
-  <rect x="200" y="100" width="800" height="430" rx="20" fill="white" opacity="0.95"/>
-  
-  <!-- Header -->
-  <rect x="200" y="100" width="800" height="70" rx="20" fill="#6366f1"/>
-  <rect x="200" y="135" width="800" height="70"/>
-  <text x="250" y="148" font-family="Arial, sans-serif" font-size="28" fill="white" font-weight="bold">Prapper AI Assistant</text>
-  
-  <!-- Chat bubbles - User message -->
-  <rect x="640" y="210" width="320" height="60" rx="12" fill="#e5e7eb"/>
-  <text x="660" y="235" font-family="Arial, sans-serif" font-size="16" fill="#374151">How do I schedule a meeting?</text>
-  
-  <!-- Chat bubbles - AI response -->
-  <rect x="240" y="290" width="420" height="100" rx="12" fill="#6366f1" opacity="0.9"/>
-  <text x="260" y="315" font-family="Arial, sans-serif" font-size="16" fill="white">I can help you schedule a meeting!</text>
-  <text x="260" y="345" font-family="Arial, sans-serif" font-size="14" fill="white" opacity="0.9">Based on your calendar, I have 3 available</text>
-  <text x="260" y="370" font-family="Arial, sans-serif" font-size="14" fill="white" opacity="0.9">slots this week. Would you like to...</text>
-  
-  <!-- Typing indicator -->
-  <rect x="240" y="410" width="100" height="40" rx="12" fill="#e5e7eb"/>
-  <circle cx="270" cy="430" r="6" fill="#6366f1" opacity="0.6"/>
-  <circle cx="290" cy="430" r="6" fill="#6366f1" opacity="0.6"/>
-  <circle cx="310" cy="430" r="6" fill="#6366f1" opacity="0.6"/>
-  
-  <!-- AI icon in header -->
-  <circle cx="950" cy="135" r="25" fill="white" opacity="0.3"/>
-  <text x="950" y="147" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle">✨</text>
-  
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Ambient glow center -->
+  <ellipse cx="600" cy="315" rx="500" ry="280" fill="url(#cyanGlow)"/>
+
+  <!-- Top bar / header section -->
+  <rect x="0" y="0" width="1200" height="3" fill="url(#cyanGrad)" opacity="0.8"/>
+
+  <!-- ===== HEADER ===== -->
+  <!-- Platform badge -->
+  <rect x="68" y="52" width="120" height="22" rx="11" fill="#06b6d4" fill-opacity="0.15" stroke="#06b6d4" stroke-opacity="0.4" stroke-width="1"/>
+  <text x="128" y="67" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#06b6d4" text-anchor="middle" letter-spacing="1">SaaS · AI</text>
+
   <!-- Title -->
-  <text x="600" y="580" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">
-    Prapper AI Platform
-  </text>
+  <text x="68" y="112" font-family="system-ui, -apple-system, sans-serif" font-size="44" font-weight="700" fill="#f1f5f9" letter-spacing="-1">Prapper AI</text>
+  <text x="68" y="142" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="400" fill="#94a3b8" letter-spacing="0.2">AI Agent Builder Platform</text>
+
+  <!-- Status pill -->
+  <circle cx="76" cy="173" r="4" fill="#22c55e"/>
+  <text x="88" y="178" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#22c55e" font-weight="500">Production · prapper-ai.vercel.app</text>
+
+  <!-- ===== TECH STACK ROW ===== -->
+  <!-- Next.js -->
+  <rect x="68" y="198" width="90" height="24" rx="6" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.1" stroke-width="1"/>
+  <text x="113" y="214" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" text-anchor="middle">Next.js 15</text>
+
+  <!-- LangChain -->
+  <rect x="166" y="198" width="88" height="24" rx="6" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.1" stroke-width="1"/>
+  <text x="210" y="214" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" text-anchor="middle">LangChain.js</text>
+
+  <!-- Supabase -->
+  <rect x="262" y="198" width="78" height="24" rx="6" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.1" stroke-width="1"/>
+  <text x="301" y="214" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" text-anchor="middle">Supabase</text>
+
+  <!-- pgvector -->
+  <rect x="348" y="198" width="74" height="24" rx="6" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.1" stroke-width="1"/>
+  <text x="385" y="214" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" text-anchor="middle">pgvector</text>
+
+  <!-- TypeScript -->
+  <rect x="430" y="198" width="80" height="24" rx="6" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.1" stroke-width="1"/>
+  <text x="470" y="214" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" text-anchor="middle">TypeScript</text>
+
+  <!-- ===========================================
+       ARCHITECTURE DIAGRAM — RIGHT SIDE
+       =========================================== -->
+
+  <!-- ===== LAYER 1: USER LAYER ===== -->
+  <text x="580" y="72" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle" letter-spacing="1.5">USER LAYER</text>
+
+  <!-- Browser card -->
+  <rect x="510" y="80" width="140" height="80" rx="10" fill="url(#cardGrad)" stroke="#06b6d4" stroke-opacity="0.3" stroke-width="1" filter="url(#shadow)"/>
+  <!-- Browser chrome -->
+  <rect x="510" y="80" width="140" height="22" rx="10" fill="#1e293b"/>
+  <rect x="510" y="91" width="140" height="11" fill="#1e293b"/>
+  <circle cx="524" cy="91" r="4" fill="#ef4444" fill-opacity="0.7"/>
+  <circle cx="536" cy="91" r="4" fill="#f59e0b" fill-opacity="0.7"/>
+  <circle cx="548" cy="91" r="4" fill="#22c55e" fill-opacity="0.7"/>
+  <!-- Browser content lines -->
+  <rect x="522" y="110" width="80" height="5" rx="2" fill="#334155"/>
+  <rect x="522" y="120" width="60" height="5" rx="2" fill="#1e3a5f"/>
+  <rect x="522" y="130" width="70" height="5" rx="2" fill="#334155"/>
+  <rect x="522" y="140" width="50" height="5" rx="2" fill="#1e3a5f"/>
+  <text x="580" y="177" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Web Client</text>
+
+  <!-- Embedded widget card -->
+  <rect x="672" y="80" width="120" height="80" rx="10" fill="url(#cardGrad)" stroke="#8b5cf6" stroke-opacity="0.4" stroke-width="1"/>
+  <rect x="672" y="80" width="120" height="18" rx="10" fill="#2d1b69" fill-opacity="0.8"/>
+  <rect x="672" y="88" width="120" height="10" fill="#2d1b69" fill-opacity="0.8"/>
+  <text x="732" y="93" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#a78bfa" text-anchor="middle">⎇ Embedded Widget</text>
+  <!-- Chat bubbles in widget -->
+  <rect x="684" y="104" width="60" height="12" rx="4" fill="#3730a3" fill-opacity="0.6"/>
+  <rect x="700" y="120" width="70" height="12" rx="4" fill="#1e293b"/>
+  <rect x="684" y="136" width="55" height="12" rx="4" fill="#3730a3" fill-opacity="0.6"/>
+  <text x="732" y="177" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">iframe / Widget</text>
+
+  <!-- Mobile card -->
+  <rect x="812" y="80" width="70" height="80" rx="10" fill="url(#cardGrad)" stroke="#06b6d4" stroke-opacity="0.2" stroke-width="1"/>
+  <rect x="821" y="90" width="52" height="60" rx="6" fill="#1e293b"/>
+  <rect x="821" y="90" width="52" height="8" rx="6" fill="#0f172a" fill-opacity="0.8"/>
+  <circle cx="847" cy="94" r="2" fill="#475569"/>
+  <rect x="828" y="104" width="38" height="4" rx="2" fill="#334155"/>
+  <rect x="828" y="112" width="28" height="4" rx="2" fill="#1e3a5f"/>
+  <rect x="828" y="120" width="34" height="4" rx="2" fill="#334155"/>
+  <rect x="828" y="128" width="22" height="4" rx="2" fill="#1e3a5f"/>
+  <text x="847" y="177" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Mobile</text>
+
+  <!-- Connectors: user → API layer -->
+  <line x1="580" y1="180" x2="580" y2="215" stroke="#06b6d4" stroke-opacity="0.4" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="732" y1="180" x2="732" y2="215" stroke="#8b5cf6" stroke-opacity="0.4" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="847" y1="180" x2="847" y2="215" stroke="#06b6d4" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- ===== LAYER 2: API / EDGE RUNTIME ===== -->
+  <text x="730" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle" letter-spacing="1.5">EDGE RUNTIME — Next.js 15 App Router</text>
+
+  <!-- Edge Runtime bar -->
+  <rect x="510" y="218" width="420" height="70" rx="10" fill="url(#cardGrad)" stroke="#06b6d4" stroke-opacity="0.25" stroke-width="1"/>
+
+  <!-- Route boxes inside edge bar -->
+  <!-- Chat API -->
+  <rect x="524" y="230" width="88" height="44" rx="6" fill="#06b6d4" fill-opacity="0.1" stroke="#06b6d4" stroke-opacity="0.4" stroke-width="1"/>
+  <text x="568" y="249" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#06b6d4" text-anchor="middle">/api/chat</text>
+  <text x="568" y="263" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">SSE Streaming</text>
+
+  <!-- Agents API -->
+  <rect x="622" y="230" width="88" height="44" rx="6" fill="#8b5cf6" fill-opacity="0.1" stroke="#8b5cf6" stroke-opacity="0.4" stroke-width="1"/>
+  <text x="666" y="249" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#8b5cf6" text-anchor="middle">/api/agents</text>
+  <text x="666" y="263" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">CRUD + Config</text>
+
+  <!-- Documents API -->
+  <rect x="720" y="230" width="88" height="44" rx="6" fill="#f59e0b" fill-opacity="0.1" stroke="#f59e0b" stroke-opacity="0.4" stroke-width="1"/>
+  <text x="764" y="249" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#f59e0b" text-anchor="middle">/api/docs</text>
+  <text x="764" y="263" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Upload + RAG</text>
+
+  <!-- Leads API -->
+  <rect x="818" y="230" width="88" height="44" rx="6" fill="#22c55e" fill-opacity="0.1" stroke="#22c55e" stroke-opacity="0.35" stroke-width="1"/>
+  <text x="862" y="249" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#22c55e" text-anchor="middle">/api/leads</text>
+  <text x="862" y="263" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Capture + Filter</text>
+
+  <!-- Connectors: API → AI & DB layers -->
+  <line x1="568" y1="290" x2="568" y2="330" stroke="#06b6d4" stroke-opacity="0.4" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="764" y1="290" x2="764" y2="330" stroke="#f59e0b" stroke-opacity="0.4" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="862" y1="290" x2="862" y2="330" stroke="#22c55e" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- ===== LAYER 3: AI ORCHESTRATION + DATABASE ===== -->
+  <text x="660" y="326" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle" letter-spacing="1.5">AI ORCHESTRATION · DATABASE</text>
+
+  <!-- LangChain / LangGraph Box -->
+  <rect x="510" y="334" width="200" height="110" rx="10" fill="url(#cardGrad)" stroke="#06b6d4" stroke-opacity="0.3" stroke-width="1" filter="url(#shadow)"/>
+  <text x="610" y="357" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#06b6d4" text-anchor="middle">AI Orchestration</text>
+
+  <!-- LangChain inner -->
+  <rect x="522" y="364" width="85" height="30" rx="5" fill="#06b6d4" fill-opacity="0.08" stroke="#06b6d4" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="564" y="377" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#38bdf8" text-anchor="middle">LangChain.js</text>
+  <text x="564" y="389" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#64748b" text-anchor="middle">Chains · Memory</text>
+
+  <!-- LangGraph inner -->
+  <rect x="613" y="364" width="85" height="30" rx="5" fill="#8b5cf6" fill-opacity="0.08" stroke="#8b5cf6" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="655" y="377" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#a78bfa" text-anchor="middle">LangGraph</text>
+  <text x="655" y="389" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#64748b" text-anchor="middle">Agents · Workflows</text>
+
+  <!-- Model providers row -->
+  <text x="610" y="412" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#475569" text-anchor="middle">Multi-Model Support</text>
+  <rect x="522" y="418" width="34" height="16" rx="3" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1" stroke-width="0.5"/>
+  <text x="539" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9ca3af" text-anchor="middle">OpenAI</text>
+  <rect x="560" y="418" width="30" height="16" rx="3" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1" stroke-width="0.5"/>
+  <text x="575" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9ca3af" text-anchor="middle">Groq</text>
+  <rect x="594" y="418" width="36" height="16" rx="3" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1" stroke-width="0.5"/>
+  <text x="612" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9ca3af" text-anchor="middle">Cohere</text>
+  <rect x="634" y="418" width="44" height="16" rx="3" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1" stroke-width="0.5"/>
+  <text x="656" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9ca3af" text-anchor="middle">Google AI</text>
+
+  <!-- Supabase DB Box -->
+  <rect x="724" y="334" width="206" height="110" rx="10" fill="url(#cardGrad)" stroke="#22c55e" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="827" y="357" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#22c55e" text-anchor="middle">Supabase Platform</text>
+
+  <!-- PostgreSQL -->
+  <rect x="736" y="364" width="80" height="30" rx="5" fill="#22c55e" fill-opacity="0.07" stroke="#22c55e" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="776" y="377" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#4ade80" text-anchor="middle">PostgreSQL</text>
+  <text x="776" y="389" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#64748b" text-anchor="middle">+ pgvector</text>
+
+  <!-- Auth / RLS -->
+  <rect x="822" y="364" width="96" height="30" rx="5" fill="#f59e0b" fill-opacity="0.07" stroke="#f59e0b" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="870" y="377" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#fbbf24" text-anchor="middle">Auth + RLS</text>
+  <text x="870" y="389" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#64748b" text-anchor="middle">Multi-tenant</text>
+
+  <!-- Real-time row -->
+  <text x="827" y="412" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#475569" text-anchor="middle">Real-time &amp; Vector Search</text>
+  <rect x="736" y="418" width="76" height="16" rx="3" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1" stroke-width="0.5"/>
+  <text x="774" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9ca3af" text-anchor="middle">WebSockets</text>
+  <rect x="818" y="418" width="100" height="16" rx="3" fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-opacity="0.1" stroke-width="0.5"/>
+  <text x="868" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#9ca3af" text-anchor="middle">Semantic Search</text>
+
+  <!-- Connector between AI and DB -->
+  <line x1="710" y1="390" x2="724" y2="390" stroke="#475569" stroke-opacity="0.5" stroke-width="1" stroke-dasharray="3 2"/>
+
+  <!-- ===== LAYER 4: DEPLOYMENT ===== -->
+  <text x="730" y="462" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle" letter-spacing="1.5">DEPLOYMENT</text>
+
+  <!-- Vercel pill -->
+  <rect x="510" y="470" width="420" height="46" rx="10" fill="url(#cardGrad)" stroke="#ffffff" stroke-opacity="0.07" stroke-width="1"/>
+  <text x="590" y="498" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">▲ Vercel Edge Network</text>
+  <text x="786" y="498" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">Global CDN · Sub-2s Response · SSR + ISR</text>
+
+  <!-- ===== LEFT SIDE FEATURE CARDS ===== -->
+  <!-- Feature: Document RAG -->
+  <rect x="68" y="258" width="210" height="92" rx="10" fill="url(#cardGrad)" stroke="#f59e0b" stroke-opacity="0.3" stroke-width="1"/>
+  <rect x="80" y="270" width="28" height="28" rx="6" fill="#f59e0b" fill-opacity="0.15"/>
+  <text x="94" y="289" font-family="system-ui, -apple-system, sans-serif" font-size="16" text-anchor="middle">📄</text>
+  <text x="118" y="276" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#f1f5f9">Document RAG</text>
+  <text x="80" y="296" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b">PDF → Chunks → Embeddings</text>
+  <text x="80" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b">pgvector semantic search</text>
+  <text x="80" y="324" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b">Source-attributed answers</text>
+  <text x="80" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#f59e0b">Cohere Embeddings ↗</text>
+
+  <!-- Feature: Streaming Chat -->
+  <rect x="68" y="362" width="210" height="82" rx="10" fill="url(#cardGrad)" stroke="#06b6d4" stroke-opacity="0.3" stroke-width="1"/>
+  <text x="80" y="383" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#f1f5f9">💬  Real-Time Streaming</text>
+  <text x="80" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b">Server-Sent Events (SSE)</text>
+  <text x="80" y="414" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b">Abort controller · FSM lifecycle</text>
+  <text x="80" y="428" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b">Context window management</text>
+  <text x="80" y="440" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#06b6d4">Token-by-token output ↗</text>
+
+  <!-- Feature: Lead Capture -->
+  <rect x="68" y="456" width="210" height="60" rx="10" fill="url(#cardGrad)" stroke="#22c55e" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="80" y="475" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#f1f5f9">👥  Lead Management</text>
+  <text x="80" y="492" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748b">Auto email/phone extraction</text>
+  <text x="80" y="506" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#22c55e">RLS-enforced tenant isolation ↗</text>
+
+  <!-- ===== BOTTOM METRICS ===== -->
+  <line x1="68" y1="544" x2="540" y2="544" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Metric 1 -->
+  <text x="68" y="568" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" fill="#06b6d4">&lt; 2s</text>
+  <text x="68" y="585" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b">Response Time</text>
+
+  <!-- Metric 2 -->
+  <text x="185" y="568" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" fill="#06b6d4">4+</text>
+  <text x="185" y="585" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b">AI Providers</text>
+
+  <!-- Metric 3 -->
+  <text x="265" y="568" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" fill="#06b6d4">RLS</text>
+  <text x="265" y="585" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b">Multi-Tenant Isolation</text>
+
+  <!-- Metric 4 -->
+  <text x="380" y="568" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="700" fill="#06b6d4">SSE</text>
+  <text x="380" y="585" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748b">Streaming Architecture</text>
+
+  <!-- Watermark / branding -->
+  <text x="1132" y="620" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#1e293b" text-anchor="end">akashtyagi.dev</text>
 </svg>

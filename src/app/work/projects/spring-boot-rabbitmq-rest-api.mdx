@@ -28,7 +28,7 @@ The project demonstrates:
 
 ## Why This Exists
 
-The gap between "I know what a message queue does" and "I can design reliable async flows in production" is real. Working with RabbitMQ in production at Quark — designing event-driven flows with retry logic and dead-letter queues — requires knowing what happens when things go wrong: broker restart, consumer crash mid-processing, queue overflow. This project is a focused baseline: the producer-consumer wiring done correctly, before you add business logic on top.
+The gap between "I know what a message queue does" and "I can design reliable async flows in production" is real. Working with RabbitMQ in production at a large-scale enterprise platform — designing event-driven flows with retry logic and dead-letter queues — requires knowing what happens when things go wrong: broker restart, consumer crash mid-processing, queue overflow. This project is a focused baseline: the producer-consumer wiring done correctly, before you add business logic on top.
 
 It also exists because every tutorial I found for Spring Boot 3.4 + RabbitMQ 4 had at least one configuration gap that caused silent failures. This covers all of them.
 

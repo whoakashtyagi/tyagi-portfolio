@@ -13,7 +13,7 @@ team:
 
 ## The Problem
 
-Quark's platform was using **per-service database authentication** — each microservice maintained its own user table and authentication logic. This architecture had accumulated significant technical debt:
+The platform was using **per-service database authentication** — each microservice maintained its own user table and authentication logic. This architecture had accumulated significant technical debt:
 
 ### Security Issues
 - **No centralized user management** — Provisioning a new user required updating multiple databases
@@ -54,7 +54,7 @@ I led the migration to **Keycloak** with:
 - **Docker** (Keycloak deployment)
 
 ### Keycloak Setup
-- **Realm**: `quark-platform`
+- **Realm**: `app-platform`
 - **Client Configurations**: Each microservice is a registered OAuth client
 - **User Federation**: Migrated users from legacy databases
 - **Identity Providers**: SAML connectors for enterprise SSO
@@ -184,7 +184,7 @@ public class DualAuthFilter extends OncePerRequestFilter {
 - Enterprise IdP (e.g., Okta) is configured as **Identity Provider (IdP)**
 - User logs in via their corporate SSO
 - Keycloak receives SAML assertion, issues JWT
-- User has seamless experience (corporate credentials work on Quark platform)
+- User has seamless experience (corporate credentials work on the platform)
 
 **Rollout**: Enabled for 3 pilot enterprise clients during parallel auth period, then expanded.
 

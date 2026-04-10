@@ -1,7 +1,7 @@
 ---
-title: "Quark MCP Server: Exposing Platform APIs to AI Agents"
+title: "MCP Server: Exposing Platform APIs to AI Agents"
 publishedAt: "2025-11-20"
-summary: "Designed a service layer that enables AI agents to interact with Quark's publishing platform via Model Context Protocol, exposing platform APIs as discoverable tools for LLM-based workflows."
+summary: "Designed a service layer that enables AI agents to interact with an enterprise publishing platform via Model Context Protocol, exposing platform APIs as discoverable tools for LLM-based workflows."
 images:
   - "/images/projects/quark-mcp-server/cover-01.svg"
 team:
@@ -13,7 +13,7 @@ team:
 
 ## The Problem
 
-Quark's publishing platform has dozens of APIs that could theoretically power AI-driven workflows:
+The publishing platform has dozens of APIs that could theoretically power AI-driven workflows:
 - Create content sections
 - Query document status
 - Trigger publishing workflows
@@ -25,17 +25,17 @@ But these APIs weren't accessible in a format that any **AI agent could discover
 2. **Input schemas** (what parameters each action requires)
 3. **Semantic descriptions** (so the agent knows when to use each tool)
 
-Without this, integrating AI agents with Quark's platform required custom integration code for every use case. Not scalable.
+Without this, integrating AI agents with the platform required custom integration code for every use case. Not scalable.
 
 ## Solution: MCP-Compatible Service Layer
 
-I designed and built a service layer that aggregates Quark's platform APIs into **MCP-compatible tool definitions**. This enables AI agents and LLM-based workflows to interact with the publishing platform **natively**.
+I designed and built a service layer that aggregates the platform's REST APIs into **MCP-compatible tool definitions**. This enables AI agents and LLM-based workflows to interact with the publishing platform **natively**.
 
 **Model Context Protocol (MCP)** is an emerging standard for exposing tools and context to AI agents. Think of it as OpenAPI for AI agents — a standardized way to describe what actions are available and how to invoke them.
 
 ### What the MCP Server Does
 
-1. **Aggregates Platform APIs**: Wraps Quark's internal REST APIs behind a unified interface
+1. **Aggregates Platform APIs**: Wraps internal REST APIs behind a unified interface
 2. **Exposes Tool Schemas**: Converts API specifications into MCP-compatible tool definitions
 3. **Handles Authentication**: Manages OAuth tokens and API keys transparently
 4. **Provides Semantic Descriptions**: Each tool has natural-language descriptions optimized for LLM understanding
@@ -65,7 +65,7 @@ AI Agent / LLM
         ↓
 MCP Client (sends tool invocation)
         ↓
-Quark MCP Server
+Platform MCP Server
     (parses tool name, validates parameters)
         ↓
 Authentication Layer
@@ -95,7 +95,7 @@ Maintains the catalog of available tools. Each tool definition includes:
 The description quality is **critical** — poorly described tools cause agents to use the wrong tool or provide incorrect parameters.
 
 **2. Schema Converter**  
-Converts Quark's OpenAPI specifications into MCP tool definitions. Handles:
+Converts the platform's OpenAPI specifications into MCP tool definitions. Handles:
 - Required vs optional parameters
 - Type mappings (string, integer, enum, etc.)
 - Nested object structures
@@ -187,7 +187,7 @@ Faster feedback loop. If the MCP server catches an invalid parameter, the agent 
 ## Impact & Use Cases
 
 ### Current Usage
-- **Internal AI Assistants**: Used by Quark employees to automate repetitive workflows (bulk content updates, status checks)
+- **Internal AI Assistants**: Used internally to automate repetitive workflows (bulk content updates, status checks)
 - **Client-Facing Chatbots**: Some enterprise clients have integrated MCP tools into internal chatbots for self-service publishing
 - **Developer Workflows**: Engineers use MCP-enabled tools (Cursor, Claude Desktop) to interact with staging environments
 
@@ -209,7 +209,7 @@ Agent: "Successfully triggered publishing for 3 documents"
 This workflow previously required custom scripting or manual clicking through the UI.
 
 ### Developer Feedback
-> "The MCP server made Quark's APIs actually usable from AI tools. Before, I'd have to read API docs and write curl commands. Now I just ask Claude to 'query document status' and it works."  
+> "The MCP server made the platform's APIs actually usable from AI tools. Before, I'd have to read API docs and write curl commands. Now I just ask Claude to 'query document status' and it works."  
 > — Internal engineer feedback
 
 ## What's Next
@@ -233,4 +233,4 @@ When an agent does something wrong, you need to trace why it chose that tool. I 
 
 ---
 
-**Key Takeaway**: This project demonstrates forward-thinking engineering — building infrastructure for AI-driven workflows before they're mainstream. The MCP server has become a strategic asset for Quark, enabling experiments with AI automation that weren't feasible before. It's also greenfield design work — no existing MCP servers to reference, so I had to reason from first principles about tool schema design, authentication flows, and error handling patterns.
+**Key Takeaway**: This project demonstrates forward-thinking engineering — building infrastructure for AI-driven workflows before they're mainstream. The MCP server has become a strategic asset, enabling experiments with AI automation that weren't feasible before. It's also greenfield design work — no existing MCP servers to reference, so I had to reason from first principles about tool schema design, authentication flows, and error handling patterns.

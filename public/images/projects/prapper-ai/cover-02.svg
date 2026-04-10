@@ -1,63 +1,309 @@
-<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bgGrad9" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#8e2de2;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#4a00e0;stop-opacity:1" />
+    <linearGradient id="bg2" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#08080f"/>
+      <stop offset="100%" stop-color="#0b0b18"/>
     </linearGradient>
+
+    <radialGradient id="heroGlow" cx="50%" cy="55%" r="45%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="cyanLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0"/>
+      <stop offset="30%" stop-color="#06b6d4"/>
+      <stop offset="70%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="amberLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0"/>
+      <stop offset="30%" stop-color="#f59e0b"/>
+      <stop offset="70%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="greenLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22c55e" stop-opacity="0"/>
+      <stop offset="30%" stop-color="#22c55e"/>
+      <stop offset="70%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="topBar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="50%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+
+    <linearGradient id="cardFill" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.055"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.015"/>
+    </linearGradient>
+
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.8" fill="#ffffff" fill-opacity="0.04"/>
+    </pattern>
+
+    <filter id="glow2">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <filter id="nodeGlow">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <marker id="arrowCyan" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#06b6d4" fill-opacity="0.9"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#f59e0b" fill-opacity="0.9"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#22c55e" fill-opacity="0.9"/>
+    </marker>
+    <marker id="arrowViolet" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#a78bfa" fill-opacity="0.9"/>
+    </marker>
   </defs>
-  
+
   <!-- Background -->
-  <rect width="1200" height="630" fill="url(#bgGrad9)"/>
-  
-  <!-- Dashboard mockup -->
-  <rect x="150" y="80" width="900" height="470" rx="16" fill="white" opacity="0.95"/>
-  
-  <!-- Sidebar -->
-  <rect x="150" y="80" width="220" height="470" rx="16" fill="#1f2937"/>
-  <rect x="150" y="97" width="220" height="470"/>
-  
-  <!-- Sidebar items -->
-  <rect x="170" y="120" width="180" height="45" rx="8" fill="#6366f1"/>
-  <text x="190" y="149" font-family="Arial, sans-serif" font-size="16" fill="white" font-weight="bold">📊 Dashboard</text>
-  
-  <rect x="170" y="180" width="180" height="45" rx="8" fill="#374151"/>
-  <text x="190" y="209" font-family="Arial, sans-serif" font-size="16" fill="#9ca3af">💬 Conversations</text>
-  
-  <rect x="170" y="240" width="180" height="45" rx="8" fill="#374151"/>
-  <text x="190" y="269" font-family="Arial, sans-serif" font-size="16" fill="#9ca3af">📁 Documents</text>
-  
-  <rect x="170" y="300" width="180" height="45" rx="8" fill="#374151"/>
-  <text x="190" y="329" font-family="Arial, sans-serif" font-size="16" fill="#9ca3af">👥 Leads</text>
-  
-  <!-- Main content area -->
-  <!-- Stats cards -->
-  <rect x="410" y="120" width="200" height="100" rx="12" fill="#f3f4f6"/>
-  <text x="430" y="150" font-family="Arial, sans-serif" font-size="16" fill="#6b7280">Total Conversations</text>
-  <text x="430" y="190" font-family="Arial, sans-serif" font-size="36" fill="#1f2937" font-weight="bold">1,284</text>
-  
-  <rect x="640" y="120" width="200" height="100" rx="12" fill="#f3f4f6"/>
-  <text x="660" y="150" font-family="Arial, sans-serif" font-size="16" fill="#6b7280">Leads Generated</text>
-  <text x="660" y="190" font-family="Arial, sans-serif" font-size="36" fill="#1f2937" font-weight="bold">347</text>
-  
-  <rect x="870" y="120" width="150" height="100" rx="12" fill="#dcfce7"/>
-  <text x="890" y="150" font-family="Arial, sans-serif" font-size="16" fill="#166534">Active Now</text>
-  <text x="890" y="190" font-family="Arial, sans-serif" font-size="36" fill="#166534" font-weight="bold">28</text>
-  
-  <!-- Chart area -->
-  <rect x="410" y="250" width="610" height="270" rx="12" fill="#f3f4f6"/>
-  <text x="430" y="280" font-family="Arial, sans-serif" font-size="18" fill="#1f2937" font-weight="bold">Conversation Analytics</text>
-  
-  <!-- Simple bar chart -->
-  <rect x="450" y="380" width="60" height="100" rx="4" fill="#6366f1" opacity="0.8"/>
-  <rect x="530" y="340" width="60" height="140" rx="4" fill="#6366f1" opacity="0.8"/>
-  <rect x="610" y="360" width="60" height="120" rx="4" fill="#6366f1" opacity="0.8"/>
-  <rect x="690" y="320" width="60" height="160" rx="4" fill="#6366f1" opacity="0.8"/>
-  <rect x="770" y="350" width="60" height="130" rx="4" fill="#6366f1" opacity="0.8"/>
-  <rect x="850" y="310" width="60" height="170" rx="4" fill="#8b5cf6" opacity="0.8"/>
-  <rect x="930" y="330" width="60" height="150" rx="4" fill="#8b5cf6" opacity="0.8"/>
-  
-  <!-- Title -->
-  <text x="600" y="590" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="white" text-anchor="middle">
-    Prapper AI - Analytics Dashboard
-  </text>
+  <rect width="1200" height="630" fill="url(#bg2)"/>
+  <rect width="1200" height="630" fill="url(#dots)"/>
+  <ellipse cx="600" cy="340" rx="500" ry="260" fill="url(#heroGlow)"/>
+
+  <!-- Top accent bar -->
+  <rect x="0" y="0" width="1200" height="3" fill="url(#topBar)" opacity="0.85"/>
+
+  <!-- ===== HEADER ===== -->
+  <rect x="68" y="48" width="158" height="22" rx="11" fill="#f59e0b" fill-opacity="0.12" stroke="#f59e0b" stroke-opacity="0.4" stroke-width="1"/>
+  <text x="147" y="63" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="middle" letter-spacing="1">RAG · VECTOR SEARCH</text>
+
+  <text x="68" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="38" font-weight="700" fill="#f1f5f9" letter-spacing="-1">Document Intelligence</text>
+  <text x="68" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#64748b">End-to-end RAG pipeline powering Prapper AI's knowledge retrieval</text>
+
+  <!-- ================================================================
+       INGESTION PIPELINE — TOP ROW (Document → Response)
+       ================================================================ -->
+
+  <text x="600" y="175" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle" letter-spacing="1.8">INGESTION PIPELINE</text>
+
+  <!-- ── Node 1: PDF Upload ── -->
+  <rect x="46" y="185" width="130" height="88" rx="10" fill="url(#cardFill)" stroke="#f59e0b" stroke-opacity="0.45" stroke-width="1.5"/>
+  <rect x="46" y="185" width="130" height="3" rx="1" fill="#f59e0b" fill-opacity="0.6"/>
+  <text x="111" y="213" font-family="system-ui, -apple-system, sans-serif" font-size="22" text-anchor="middle">📄</text>
+  <text x="111" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#f1f5f9" text-anchor="middle">PDF Upload</text>
+  <text x="111" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">User document</text>
+  <text x="111" y="263" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">via Next.js API</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="178" y1="229" x2="218" y2="229" stroke="#f59e0b" stroke-opacity="0.7" stroke-width="2" marker-end="url(#arrowAmber)"/>
+
+  <!-- ── Node 2: PDF Parser ── -->
+  <rect x="220" y="185" width="130" height="88" rx="10" fill="url(#cardFill)" stroke="#f59e0b" stroke-opacity="0.35" stroke-width="1.5"/>
+  <rect x="220" y="185" width="130" height="3" rx="1" fill="#f59e0b" fill-opacity="0.5"/>
+  <text x="285" y="213" font-family="system-ui, -apple-system, sans-serif" font-size="22" text-anchor="middle">⚙️</text>
+  <text x="285" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#f1f5f9" text-anchor="middle">PDF Parser</text>
+  <text x="285" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Text extraction</text>
+  <text x="285" y="263" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">+ metadata</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="352" y1="229" x2="392" y2="229" stroke="#f59e0b" stroke-opacity="0.7" stroke-width="2" marker-end="url(#arrowAmber)"/>
+
+  <!-- ── Node 3: Text Chunker ── -->
+  <rect x="394" y="185" width="130" height="88" rx="10" fill="url(#cardFill)" stroke="#f59e0b" stroke-opacity="0.35" stroke-width="1.5"/>
+  <rect x="394" y="185" width="130" height="3" rx="1" fill="#f59e0b" fill-opacity="0.5"/>
+  <text x="459" y="213" font-family="system-ui, -apple-system, sans-serif" font-size="22" text-anchor="middle">✂️</text>
+  <text x="459" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#f1f5f9" text-anchor="middle">Text Chunker</text>
+  <text x="459" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Recursive splitter</text>
+  <text x="459" y="263" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">w/ overlap</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="526" y1="229" x2="566" y2="229" stroke="#f59e0b" stroke-opacity="0.7" stroke-width="2" marker-end="url(#arrowAmber)"/>
+
+  <!-- ── Node 4: Cohere Embeddings ── -->
+  <rect x="568" y="185" width="140" height="88" rx="10" fill="url(#cardFill)" stroke="#06b6d4" stroke-opacity="0.5" stroke-width="1.5" filter="url(#glow2)"/>
+  <rect x="568" y="185" width="140" height="3" rx="1" fill="#06b6d4" fill-opacity="0.7"/>
+  <text x="638" y="213" font-family="system-ui, -apple-system, sans-serif" font-size="22" text-anchor="middle">🧠</text>
+  <text x="638" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#06b6d4" text-anchor="middle">Cohere Embed</text>
+  <text x="638" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">1536-dim vectors</text>
+  <text x="638" y="263" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">embed-english-v3</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="710" y1="229" x2="750" y2="229" stroke="#06b6d4" stroke-opacity="0.7" stroke-width="2" marker-end="url(#arrowCyan)"/>
+
+  <!-- ── Node 5: pgvector Store ── -->
+  <rect x="752" y="185" width="140" height="88" rx="10" fill="url(#cardFill)" stroke="#22c55e" stroke-opacity="0.45" stroke-width="1.5" filter="url(#glow2)"/>
+  <rect x="752" y="185" width="140" height="3" rx="1" fill="#22c55e" fill-opacity="0.6"/>
+  <text x="822" y="213" font-family="system-ui, -apple-system, sans-serif" font-size="22" text-anchor="middle">🗄️</text>
+  <text x="822" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#4ade80" text-anchor="middle">pgvector Store</text>
+  <text x="822" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Supabase vectors</text>
+  <text x="822" y="263" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">+ RLS policies</text>
+
+  <!-- Arrow 5→6 -->
+  <line x1="894" y1="229" x2="934" y2="229" stroke="#22c55e" stroke-opacity="0.7" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+  <!-- ── Node 6: Indexed ── -->
+  <rect x="936" y="185" width="130" height="88" rx="10" fill="url(#cardFill)" stroke="#22c55e" stroke-opacity="0.35" stroke-width="1.5"/>
+  <rect x="936" y="185" width="130" height="3" rx="1" fill="#22c55e" fill-opacity="0.5"/>
+  <text x="1001" y="213" font-family="system-ui, -apple-system, sans-serif" font-size="22" text-anchor="middle">✅</text>
+  <text x="1001" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#f1f5f9" text-anchor="middle">Indexed</text>
+  <text x="1001" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Ready for queries</text>
+  <text x="1001" y="263" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#22c55e" text-anchor="middle">per-tenant scope</text>
+
+  <!-- Step labels -->
+  <text x="111" y="283" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">STEP 1</text>
+  <text x="285" y="283" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">STEP 2</text>
+  <text x="459" y="283" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">STEP 3</text>
+  <text x="638" y="283" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">STEP 4</text>
+  <text x="822" y="283" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">STEP 5</text>
+  <text x="1001" y="283" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">STEP 6</text>
+
+  <!-- Separator line -->
+  <line x1="46" y1="308" x2="1154" y2="308" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- ================================================================
+       QUERY / RETRIEVAL PIPELINE — BOTTOM
+       ================================================================ -->
+  <text x="600" y="330" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#475569" text-anchor="middle" letter-spacing="1.8">QUERY &amp; RETRIEVAL PIPELINE</text>
+
+  <!-- ── Q1: User Query ── -->
+  <rect x="46" y="342" width="145" height="108" rx="10" fill="url(#cardFill)" stroke="#8b5cf6" stroke-opacity="0.4" stroke-width="1.5"/>
+  <rect x="46" y="342" width="145" height="3" rx="1" fill="#8b5cf6" fill-opacity="0.6"/>
+  <text x="118" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="20" text-anchor="middle">💬</text>
+  <text x="118" y="392" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#f1f5f9" text-anchor="middle">User Query</text>
+  <!-- chat-style mockup -->
+  <rect x="60" y="399" width="96" height="11" rx="4" fill="#3730a3" fill-opacity="0.5"/>
+  <text x="108" y="408" font-family="monospace, sans-serif" font-size="7.5" fill="#a78bfa" text-anchor="middle">"How does X work?"</text>
+  <rect x="75" y="415" width="80" height="11" rx="4" fill="#1e293b"/>
+  <text x="115" y="424" font-family="monospace, sans-serif" font-size="7.5" fill="#475569" text-anchor="middle">typing...</text>
+  <text x="118" y="442" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">SSE → /api/chat</text>
+
+  <!-- Arrow Q1→Q2 -->
+  <line x1="193" y1="396" x2="233" y2="396" stroke="#8b5cf6" stroke-opacity="0.7" stroke-width="2" marker-end="url(#arrowViolet)"/>
+
+  <!-- ── Q2: Query Embedding ── -->
+  <rect x="235" y="342" width="140" height="108" rx="10" fill="url(#cardFill)" stroke="#06b6d4" stroke-opacity="0.45" stroke-width="1.5"/>
+  <rect x="235" y="342" width="140" height="3" rx="1" fill="#06b6d4" fill-opacity="0.6"/>
+  <text x="305" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="20" text-anchor="middle">🔢</text>
+  <text x="305" y="392" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#06b6d4" text-anchor="middle">Query Embed</text>
+  <text x="305" y="408" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Cohere API call</text>
+  <!-- Vector visual -->
+  <rect x="248" y="415" width="114" height="14" rx="3" fill="#0f172a"/>
+  <rect x="250" y="417" width="18" height="10" rx="2" fill="#06b6d4" fill-opacity="0.6"/>
+  <rect x="271" y="417" width="12" height="10" rx="2" fill="#06b6d4" fill-opacity="0.25"/>
+  <rect x="286" y="417" width="20" height="10" rx="2" fill="#06b6d4" fill-opacity="0.5"/>
+  <rect x="309" y="417" width="14" height="10" rx="2" fill="#06b6d4" fill-opacity="0.35"/>
+  <rect x="326" y="417" width="16" height="10" rx="2" fill="#06b6d4" fill-opacity="0.55"/>
+  <rect x="345" y="417" width="15" height="10" rx="2" fill="#06b6d4" fill-opacity="0.2"/>
+  <text x="305" y="442" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">[1536-dim vector]</text>
+
+  <!-- Arrow Q2→Q3 -->
+  <line x1="377" y1="396" x2="417" y2="396" stroke="#06b6d4" stroke-opacity="0.7" stroke-width="2" marker-end="url(#arrowCyan)"/>
+
+  <!-- ── Q3: Semantic Search ── -->
+  <rect x="419" y="342" width="145" height="108" rx="10" fill="url(#cardFill)" stroke="#22c55e" stroke-opacity="0.45" stroke-width="1.5" filter="url(#glow2)"/>
+  <rect x="419" y="342" width="145" height="3" rx="1" fill="#22c55e" fill-opacity="0.6"/>
+  <text x="491" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="20" text-anchor="middle">🔍</text>
+  <text x="491" y="392" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#4ade80" text-anchor="middle">Semantic Search</text>
+  <text x="491" y="408" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">cosine similarity</text>
+  <!-- similarity bars -->
+  <text x="433" y="422" font-family="monospace" font-size="8" fill="#475569">0.94 ████████</text>
+  <text x="433" y="433" font-family="monospace" font-size="8" fill="#475569">0.87 ███████</text>
+  <text x="433" y="444" font-family="monospace" font-size="8" fill="#475569">0.79 ██████</text>
+  <text x="491" y="460" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">Top-K chunks retrieved</text>
+
+  <!-- Arrow Q3→Q4 -->
+  <line x1="566" y1="396" x2="606" y2="396" stroke="#22c55e" stroke-opacity="0.7" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+  <!-- ── Q4: LangChain RAG ── -->
+  <rect x="608" y="342" width="150" height="108" rx="10" fill="url(#cardFill)" stroke="#06b6d4" stroke-opacity="0.5" stroke-width="1.5" filter="url(#glow2)"/>
+  <rect x="608" y="342" width="150" height="3" rx="1" fill="#06b6d4" fill-opacity="0.7"/>
+  <text x="683" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="20" text-anchor="middle">⛓️</text>
+  <text x="683" y="392" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#06b6d4" text-anchor="middle">LangChain RAG</text>
+  <text x="683" y="406" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Context assembly</text>
+  <!-- Prompt formation visual -->
+  <rect x="620" y="412" width="126" height="26" rx="4" fill="#0f172a"/>
+  <text x="683" y="423" font-family="monospace" font-size="7" fill="#475569" text-anchor="middle">SYSTEM: {agent_prompt}</text>
+  <text x="683" y="434" font-family="monospace" font-size="7" fill="#64748b" text-anchor="middle">CONTEXT: {top_k_chunks}</text>
+  <text x="683" y="450" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">History + context window mgmt</text>
+
+  <!-- Arrow Q4→Q5 -->
+  <line x1="760" y1="396" x2="800" y2="396" stroke="#06b6d4" stroke-opacity="0.7" stroke-width="2" marker-end="url(#arrowCyan)"/>
+
+  <!-- ── Q5: LLM Inference ── -->
+  <rect x="802" y="342" width="145" height="108" rx="10" fill="url(#cardFill)" stroke="#a78bfa" stroke-opacity="0.5" stroke-width="1.5" filter="url(#glow2)"/>
+  <rect x="802" y="342" width="145" height="3" rx="1" fill="#a78bfa" fill-opacity="0.7"/>
+  <text x="874" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="20" text-anchor="middle">🤖</text>
+  <text x="874" y="392" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#a78bfa" text-anchor="middle">LLM Inference</text>
+  <text x="874" y="408" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">GPT-4 / LLaMA / Gemini</text>
+  <rect x="814" y="414" width="50" height="14" rx="3" fill="#4c1d95" fill-opacity="0.5"/>
+  <text x="839" y="424" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#a78bfa" text-anchor="middle">OpenAI</text>
+  <rect x="870" y="414" width="40" height="14" rx="3" fill="#1a1034" fill-opacity="0.5"/>
+  <text x="890" y="424" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#a78bfa" text-anchor="middle">Groq</text>
+  <rect x="916" y="414" width="20" height="14" rx="3" fill="#1a1034" fill-opacity="0.5"/>
+  <text x="926" y="424" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#a78bfa" text-anchor="middle">+</text>
+  <text x="874" y="450" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">streamed token-by-token</text>
+
+  <!-- Arrow Q5→Q6 -->
+  <line x1="949" y1="396" x2="989" y2="396" stroke="#a78bfa" stroke-opacity="0.7" stroke-width="2" marker-end="url(#arrowViolet)"/>
+
+  <!-- ── Q6: SSE Response ── -->
+  <rect x="991" y="342" width="145" height="108" rx="10" fill="url(#cardFill)" stroke="#06b6d4" stroke-opacity="0.4" stroke-width="1.5"/>
+  <rect x="991" y="342" width="145" height="3" rx="1" fill="#06b6d4" fill-opacity="0.5"/>
+  <text x="1063" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="20" text-anchor="middle">⚡</text>
+  <text x="1063" y="392" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#f1f5f9" text-anchor="middle">SSE Response</text>
+  <text x="1063" y="408" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Streamed to client</text>
+  <!-- SSE token stream visual -->
+  <rect x="1003" y="414" width="121" height="22" rx="3" fill="#0f172a"/>
+  <text x="1010" y="423" font-family="monospace" font-size="7" fill="#06b6d4">data: "Based" \n</text>
+  <text x="1010" y="432" font-family="monospace" font-size="7" fill="#06b6d4">data: " on" \n</text>
+  <text x="1063" y="450" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="#374151" text-anchor="middle">AbortController · FSM</text>
+
+  <!-- ================================================================
+       BOTTOM CALLOUT BOXES — Engineering Decisions
+       ================================================================ -->
+  <line x1="46" y1="468" x2="1154" y2="468" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Box 1: Chunking -->
+  <rect x="46" y="480" width="243" height="100" rx="8" fill="url(#cardFill)" stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="58" y="501" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#fbbf24">Chunking Strategy</text>
+  <text x="58" y="518" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">Recursive char splitter with overlap</text>
+  <text x="58" y="532" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">preserves semantic coherence across</text>
+  <text x="58" y="546" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">document boundaries. Chunk metadata</text>
+  <text x="58" y="560" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">retained for source attribution.</text>
+  <text x="58" y="574" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#f59e0b">Chunk size tuned for retrieval precision ↗</text>
+
+  <!-- Box 2: Context Window -->
+  <rect x="305" y="480" width="243" height="100" rx="8" fill="url(#cardFill)" stroke="#06b6d4" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="317" y="501" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">Context Management</text>
+  <text x="317" y="518" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">Sliding window keeps last N messages</text>
+  <text x="317" y="532" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">+ retrieved chunks. Long sessions use</text>
+  <text x="317" y="546" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">LangChain summarization to compress</text>
+  <text x="317" y="560" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">history without losing context.</text>
+  <text x="317" y="574" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#06b6d4">Prevents context overflow at scale ↗</text>
+
+  <!-- Box 3: Multi-Tenant Isolation -->
+  <rect x="564" y="480" width="243" height="100" rx="8" fill="url(#cardFill)" stroke="#22c55e" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="576" y="501" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#4ade80">Multi-Tenant Isolation</text>
+  <text x="576" y="518" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">Row Level Security (RLS) enforces</text>
+  <text x="576" y="532" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">per-user_id vector scoping. Agent A</text>
+  <text x="576" y="546" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">cannot access Agent B's documents.</text>
+  <text x="576" y="560" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">Isolation verified with integration tests.</text>
+  <text x="576" y="574" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#22c55e">Supabase Auth + pgvector scoping ↗</text>
+
+  <!-- Box 4: Stream Lifecycle -->
+  <rect x="823" y="480" width="243" height="100" rx="8" fill="url(#cardFill)" stroke="#a78bfa" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="835" y="501" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700" fill="#a78bfa">Stream Lifecycle FSM</text>
+  <text x="835" y="518" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">Finite state machine: idle → streaming</text>
+  <text x="835" y="532" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">→ complete | error. AbortController</text>
+  <text x="835" y="546" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">handles mid-stream cancellations with</text>
+  <text x="835" y="560" font-family="system-ui, -apple-system, sans-serif" font-size="9.5" fill="#64748b">server-side cleanup on disconnect.</text>
+  <text x="835" y="574" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#a78bfa">Graceful error recovery at every state ↗</text>
+
+  <!-- Watermark -->
+  <text x="1144" y="620" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#1e293b" text-anchor="end">akashtyagi.dev</text>
 </svg>

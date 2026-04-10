@@ -1,7 +1,7 @@
 ---
 title: "AI-Powered Document Structuring Service"
 publishedAt: "2025-09-15"
-summary: "Reduced client onboarding time by 80% using Spring AI SDK and Azure AI Document Intelligence to automatically map legacy documents to Quark's internal schema."
+summary: "Reduced client onboarding time by 80% using Spring AI SDK and Azure AI Document Intelligence to automatically map legacy documents to the platform's internal content schema."
 images:
   - "/images/projects/ai-document-structuring-service/cover-01.svg"
 team:
@@ -13,9 +13,9 @@ team:
 
 ## The Problem
 
-Quark's enterprise publishing platform serves global media and content organizations. When a new client signs up, they typically arrive with **years of documents in proprietary or unstructured formats** — DOCX files, PDFs, legacy XML schemas that don't map cleanly to Quark's internal content model.
+The enterprise publishing platform serves global media and content organizations. When a new client signs up, they typically arrive with **years of documents in proprietary or unstructured formats** — DOCX files, PDFs, legacy XML schemas that don't map cleanly to the platform's internal content model.
 
-The existing onboarding process was **manual and expensive**: migration specialists would spend days (sometimes weeks) parsing documents, manually identifying structures (headings, sections, tables, metadata), and mapping them to Quark's schema. This didn't scale as the client base grew.
+The existing onboarding process was **manual and expensive**: migration specialists would spend days (sometimes weeks) parsing documents, manually identifying structures (headings, sections, tables, metadata), and mapping them to the platform's content schema. This didn't scale as the client base grew.
 
 **Business Impact**: Slow onboarding meant longer time-to-value for clients and constrained sales velocity. The manual process was also error-prone — a misclassified heading could break a book's table of contents.
 
@@ -26,7 +26,7 @@ I built an AI-powered document ingestion microservice that automates the entire 
 1. **Document Ingestion**: Accepts DOCX and PDF files via REST API
 2. **Intelligent Extraction**: Passes documents through **Azure AI Document Intelligence** for structure analysis  
    → Extracts tables, headings, sections, paragraphs, metadata
-3. **Schema Mapping Layer**: Custom mapping logic converts Azure's semi-structured JSON into Quark's internal schema format
+3. **Schema Mapping Layer**: Custom mapping logic converts Azure's semi-structured JSON into the platform's internal schema format
 4. **Confidence Scoring**: Flags ambiguous mappings for human review rather than silently mapping incorrectly
 5. **Idempotent Processing**: Supports resumable jobs for large document batches that may timeout mid-way
 
@@ -56,11 +56,11 @@ Semi-Structured JSON Response
 Custom Mapping Layer
     (Confidence Scoring, Error Detection)
         ↓
-Quark Schema Objects
+Platform Schema Objects
         ↓
 Validation & Human Review (if needed)
         ↓
-Import into Quark Platform
+Import into Platform
 ```
 
 ### Core Components
@@ -88,7 +88,7 @@ Large document jobs (100+ pages) can timeout. The service is designed to be idem
 - Failed extractions are retried with exponential backoff
 
 **4. Validation Layer**  
-Before importing into Quark's schema:
+Before importing into the platform's content schema:
 - Structural validation (required fields present, relationships intact)
 - Content sanitization (remove unsupported characters, normalize formatting)
 - Reference resolution (ensure internal links and cross-references resolve)
@@ -189,4 +189,4 @@ Potential improvements:
 
 ---
 
-**Key Takeaway**: This project demonstrates my ability to integrate AI into production workflows with proper error handling, cost management, and operational concerns. The 80% time reduction is real — measured across dozens of client migrations — and the service has become critical infrastructure at Quark.
+**Key Takeaway**: This project demonstrates my ability to integrate AI into production workflows with proper error handling, cost management, and operational concerns. The 80% time reduction is real — measured across dozens of client migrations — and the service has become critical infrastructure in production.
