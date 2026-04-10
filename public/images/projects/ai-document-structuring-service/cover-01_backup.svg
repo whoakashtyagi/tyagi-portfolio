@@ -1,0 +1,33 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad1)"/>
+  
+  <!-- Abstract document shapes -->
+  <rect x="150" y="120" width="280" height="380" rx="12" fill="white" opacity="0.1"/>
+  <rect x="170" y="140" width="240" height="8" rx="4" fill="white" opacity="0.3"/>
+  <rect x="170" y="165" width="200" height="8" rx="4" fill="white" opacity="0.3"/>
+  <rect x="170" y="190" width="220" height="8" rx="4" fill="white" opacity="0.3"/>
+  
+  <!-- AI processing arrow -->
+  <path d="M 450 310 L 550 310" stroke="white" stroke-width="4" opacity="0.6" stroke-dasharray="10,5"/>
+  <polygon points="550,310 540,305 540,315" fill="white" opacity="0.6"/>
+  
+  <!-- Structured output -->
+  <rect x="600" y="120" width="420" height="380" rx="12" fill="white" opacity="0.15"/>
+  <rect x="630" y="160" width="160" height="40" rx="6" fill="#4ade80" opacity="0.8"/>
+  <rect x="630" y="220" width="260" height="40" rx="6" fill="#60a5fa" opacity="0.8"/>
+  <rect x="630" y="280" width="200" height="40" rx="6" fill="#f472b6" opacity="0.8"/>
+  <rect x="630" y="340" width="320" height="40" rx="6" fill="#fbbf24" opacity="0.8"/>
+  
+  <!-- Title -->
+  <text x="600" y="580" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">
+    AI Document Structuring
+  </text>
+</svg>
