@@ -48,8 +48,8 @@ const home: Home = {
   image: "/images/og/home.svg",
   label: "Home",
   title: `${person.name} – Backend Engineer`,
-  description: `Backend engineer at Quark building distributed systems, microservices, and AI features`,
-  headline: <>Backend Engineer focused on scale and reliability</>,
+  description: `Backend engineer with 4+ years building enterprise distributed systems, Java microservices, and production AI integrations at Quark Software. 3× Employee of the Quarter.`,
+  headline: <>I build systems that survive contact with production</>,
   featured: {
     display: true,
     title: (
@@ -65,8 +65,9 @@ const home: Home = {
   },
   subline: (
     <>
-      I build and design enterprise systems at Quark, solving for performance, failure, and growth. <br />
-      Lately, I've been working on integrating AI into real production workflows.
+      Senior backend engineer at Quark — shipping distributed systems, AI integrations, and platform infrastructure
+      that handles real enterprise load. <br />
+      4+ years, 3× Employee of the Quarter, measurable impact on every major delivery.
     </>
   ),
 };
@@ -75,7 +76,7 @@ const about: About = {
   path: "/about",
   label: "About",
   title: `About – ${person.name}`,
-  description: `Meet ${person.name}, ${person.role} with 4+ years in distributed systems and AI integration`,
+  description: `Meet ${person.name}, a backend engineer with 4+ years at Quark Software building distributed systems, microservices, and AI-powered platform features. 3× Employee of the Quarter.`,
   tableOfContent: {
     display: true,
     subItems: false,

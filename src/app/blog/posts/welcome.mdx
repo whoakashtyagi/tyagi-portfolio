@@ -1,19 +1,68 @@
 ---
-title: "Welcome to my blog"
+title: "Strong Fundamentals + AI = Stack-Agnostic Engineering"
 publishedAt: "2026-03-26"
-summary: "Thoughts on backend engineering, distributed systems, and building software that scales."
+summary: "The language is just the last mile. Data structures, consistency models, failure modes — these transfer across every stack. Here's how solid fundamentals combined with AI tools let you ship production-quality code in any ecosystem."
 image: "/images/og/home.jpg"
 ---
 
-## Coming Soon
+My primary language is Java. My daily stack is Spring Boot, PostgreSQL, Redis, Kafka, and AWS. But I've shipped production features in Python, built full-stack SaaS with Next.js and Supabase, written LangChain.js pipelines, and integrated Azure AI services across different service layers.
 
-I'll be sharing insights on backend engineering, distributed systems, microservices architecture, and lessons learned from building production software at scale.
+I'm not unusually fast at picking up new stacks. What I've found is that picking up a new stack isn't really the hard part — once the fundamentals are solid.
 
-Topics I plan to cover:
-- **Distributed Systems**: Design patterns, consistency models, and failure handling
-- **Microservices**: Service boundaries, communication patterns, and observability
-- **AI Integration**: Practical approaches to integrating LLMs into production systems
-- **Performance**: Profiling, optimization, and scaling strategies
-- **Engineering Culture**: Code review, documentation, and team collaboration
+## What actually transfers
 
-Stay tuned for technical deep-dives and real-world engineering stories.
+When I approach a new system, whether it's a Go service or a Python FastAPI app or a Node.js event processor, I'm asking the same questions:
+
+**Data model first.** What are the entities? What are the relationships? What's the cardinality — one-to-many or many-to-many? Where does denormalization buy you performance at the cost of consistency? The storage technology changes. These questions don't.
+
+**Where does it fail?** Distributed systems fail at boundaries. Between services. Under database lock contention. When the message queue backs up and the consumer can't keep up. When the cache misses 30% of the time instead of 5%. Every stack has the same failure surface — the labels just change.
+
+**What's the write path vs. the read path?** A system optimized for writes (append-only, eventual consistency) will look very different from one optimized for reads (materialized views, denormalized caches, CDN-backed responses). The decision has to match the access pattern. This is a systems thinking decision, not a language decision.
+
+**What breaks under load?** N+1 query patterns. Synchronous calls where async was needed. Missing indexes on high-cardinality columns. Connection pool exhaustion from too many long-lived transactions. These performance failure modes are language-agnostic — they exist in Java, Python, Ruby, Go, anything.
+
+These mental models transfer. Syntax doesn't need to.
+
+## The tech stack is API documentation
+
+Here's the practical reality: every framework and library at any maturity level has searchable documentation, StackOverflow answers, and GitHub examples. The syntax of "configure a Kafka consumer in Go" is discoverable in minutes. The question of *whether to use Kafka at all*, and *how to design the consumer group topology* and *what your dead-letter strategy should be* — that's where knowing distributed systems actually matters.
+
+My Java/Spring experience maps cleanly:
+- `@KafkaListener` in Java → `confluent-kafka-python` or `kafkajs` in other stacks. Same consumer group semantics, same offset commit decisions, same at-least-once vs. exactly-once trade-offs.
+- Spring Data JPA's `@Transactional` → SQLAlchemy's session management, Prisma's `$transaction` API. Different syntax, same isolation level decisions.
+- Spring Security OAuth resource server → Passport.js, FastAPI's OAuth2PasswordBearer, Go's `golang-jwt`. Same JWT validation flow, same JWKS endpoint, same token claim extraction.
+- Caffeine (in-process LRU cache) → `functools.lru_cache` in Python, `node-lru-cache` in Node.js. Same cache eviction trade-offs, same hot key problem.
+
+The concept is the interface. The library is the implementation.
+
+## How AI fits in
+
+LLMs have changed what "picking up a new stack" means in practice. I use AI as a syntax translation layer — not to think for me, but to eliminate the parts of learning a new stack that don't require deep thinking.
+
+When I built Prapper AI in Next.js and LangChain.js (coming from a Java background), I didn't need to internalize every Next.js routing convention before I could think about the RAG pipeline architecture. I understood the chunking strategy, the embedding model trade-offs, the vector similarity search design. I used Copilot to handle the framework-level boilerplate — the exact API for server-side data fetching, the correct way to configure edge runtime, the syntax for streaming SSE responses.
+
+The split is: **I think about the system. AI handles the framework surface.**
+
+This only works if you actually understand the system. If you rely on AI to make the architectural decisions — should this be a batch job or event-driven? should this use optimistic locking or a distributed lock? should cache TTL be 5 minutes or 1 hour? — you'll get plausible-sounding answers that don't hold up under production load.
+
+AI as a force multiplier requires something to multiply. That something is systems thinking.
+
+## What this blog is about
+
+Every post here is about the transferable layer — the system design patterns and distributed systems trade-offs that apply regardless of what's in your `pom.xml` or `package.json`:
+
+**Caching patterns in distributed systems** — Cache-aside vs. write-through vs. read-through. When LRU is the wrong eviction policy. How the N+1 anti-pattern manifests differently across service boundaries than in a single database.
+
+**Zero-downtime migrations** — The shadow deploy pattern. Dual-read/dual-write strategies. How to cut over infrastructure without a maintenance window, using the Strangler Fig pattern and backward-compatible rollouts.
+
+**Consistency and failure handling** — When eventual consistency is fine and when it causes bugs your users will find before your tests do. Idempotency keys, retry strategies with exponential backoff, circuit breakers — the patterns are language-agnostic.
+
+**AI integration as a systems problem** — Building LLM-powered features that are observable, testable, and reliable in production. Not demos — systems.
+
+I'll use Java and Spring examples heavily because that's my primary stack, but the design decisions will always be framed at the level where they transfer.
+
+---
+
+If you're the kind of engineer who asks "why does this work this way" before asking "what's the syntax for this" — this is for you.
+
+— Akash

@@ -1,0 +1,212 @@
+---
+title: "The N+1 Problem Doesn't Stop at the Database"
+publishedAt: "2026-01-15"
+summary: "When microservices call each other in loops, you get the same N+1 anti-pattern from ORM days — except now it's HTTP round-trips and object storage reads. Here's how to find them and the caching and batching patterns that fix them."
+image: "/images/og/home.jpg"
+---
+
+Most backend engineers encounter the N+1 problem first in the context of ORMs. Hibernate loads a list of 50 orders, then executes a separate query for each order's line items. Fifty queries instead of one join. Classic.
+
+What's less talked about: the same anti-pattern appears in distributed systems at a completely different layer — and it's often much harder to spot, because the extra calls are HTTP requests to other services or reads from object storage rather than SQL statements you can see in query logs.
+
+Understanding this pattern — and the caching and batching strategies that eliminate it — is directly transferable across stacks. Whether you're using Java/Spring, Python/FastAPI, Go, or Node.js, the system design problem is identical.
+
+## The distributed N+1 in practice
+
+Here's what it looks like in a typical microservice:
+
+```
+Service A: Process a document with 200 referenced assets
+              ↓
+              for each asset:
+                → HTTP GET /assets/{id}/metadata  →  Asset Service B
+                ← returns dimensions, type, alt text ←
+              200 HTTP calls, each ~50-70ms
+              Total wait: 14 seconds — for metadata
+```
+
+The implementation code is deceptively reasonable-looking:
+
+```java
+// Java / Spring — but this anti-pattern exists in every language
+for (Asset asset : document.getAssets()) {
+    AssetMetadata metadata = assetServiceClient.getMetadata(asset.getId());
+    renderer.process(asset, metadata);
+}
+```
+
+```python
+# Python equivalent — same problem
+for asset in document.assets:
+    metadata = asset_service.get_metadata(asset.id)
+    renderer.process(asset, metadata)
+```
+
+```typescript
+// TypeScript / Node.js — same problem
+for (const asset of document.assets) {
+  const metadata = await assetService.getMetadata(asset.id);
+  renderer.process(asset, metadata);
+}
+```
+
+The problem isn't the language. It's the design: N network round-trips where 1 should suffice.
+
+## Why it's hard to catch
+
+In a monolith, N+1 queries show up in database logs. You have query logging. You have slow query thresholds. APM tools flag "this request executed 200 SQL queries."
+
+In a microservice architecture, there's no equivalent default visibility. The calls are HTTP. They succeed. Each one is fast in isolation. The slowness only becomes visible at the call-site level, in distributed traces or a profiler — and only if someone is looking.
+
+**Tools by stack for finding this:**
+- **JVM (Java/Kotlin/Scala)**: JProfiler, async-profiler, Micrometer traces
+- **Python**: py-spy (sampling profiler), OpenTelemetry with Jaeger
+- **Go**: `pprof`, built-in tracing
+- **Node.js**: `clinic.js`, `--prof` flag, OpenTelemetry
+- **General**: Distributed tracing (Jaeger, Zipkin, Datadog APM) visualizes the full call graph across services
+
+The profiler output for this class of problem always looks the same, regardless of stack:
+
+```
+Wall-clock breakdown for a pipeline job:
+────────────────────────────────────────
+External service calls:  90s   (30%)  ← N+1 HTTP calls
+Object storage reads:   120s   (40%)  ← N+1 blob fetches
+Actual computation:      60s   (20%)
+Everything else:         30s   (10%)
+────────────────────────────────────────
+```
+
+70% of elapsed time waiting on I/O. 20% doing real work.
+
+## Fix 1: The Batch API pattern
+
+The cleanest solution is to design service-to-service APIs that support batch operations.
+
+```
+Service A: Process document
+              ↓
+              Collect all asset IDs upfront
+              → HTTP POST /assets/metadata/batch  →  Asset Service B
+                  body: { ids: [id1, id2, ... id200] }
+              ← returns map of { id → metadata } ←
+              1 HTTP call. Same data.
+```
+
+```java
+// Java: collect IDs, single batch call, process locally
+List<String> assetIds = document.getAssets().stream()
+    .map(Asset::getId)
+    .collect(Collectors.toList());
+
+Map<String, AssetMetadata> metadataMap = 
+    assetServiceClient.getMetadataBatch(assetIds);
+
+for (Asset asset : document.getAssets()) {
+    AssetMetadata metadata = metadataMap.get(asset.getId());
+    renderer.process(asset, metadata);
+}
+```
+
+**The batch endpoint on the provider side** (Asset Service B):
+
+```java
+@PostMapping("/assets/metadata/batch")
+public Map<String, AssetMetadata> batchMetadata(@RequestBody List<String> ids) {
+    return assetRepository.findAllById(ids).stream()
+        .collect(Collectors.toMap(Asset::getId, Asset::getMetadata));
+}
+```
+
+This is a coordinated API design decision — both services have to change. But the performance impact is deterministic: N HTTP calls become 1.
+
+**When to design batch APIs from the start**: If Service A will ever iterate over a collection and call Service B for each element, design the batch endpoint before you need it. The N+1 problem is predictable from the access pattern.
+
+## Fix 2: The Cache-Aside pattern for object storage
+
+The second class of N+1 problem: repeated reads of the same object from object storage (S3, Azure Blob Storage, GCS). An asset referenced on every page of a 300-page document gets fetched 300 times — same bytes, same network round-trip, 300 times.
+
+The Cache-Aside pattern (also called Lazy Loading):
+
+```
+Read request:
+  → Check cache
+  → Cache HIT: return cached value          (fast path)
+  → Cache MISS: fetch from source, store in cache, return   (slow path, one-time cost)
+```
+
+```java
+// Java with Caffeine (in-process cache)
+LoadingCache<String, byte[]> assetCache = Caffeine.newBuilder()
+    .maximumWeight(500 * 1024 * 1024)  // 500 MB max
+    .weigher((key, value) -> ((byte[]) value).length)
+    .expireAfterWrite(1, TimeUnit.HOURS)
+    .build(key -> fetchFromObjectStorage(key));  // called only on cache miss
+
+// Usage — same interface, hides whether data comes from cache or source
+byte[] assetBytes = assetCache.get("s3://bucket/assets/logo.png");
+```
+
+```python
+# Python equivalent with functools or cachetools
+from cachetools import LRUCache, cached
+
+asset_cache = LRUCache(maxsize=500 * 1024 * 1024)
+
+@cached(cache=asset_cache, key=lambda url: url)
+def get_asset(url: str) -> bytes:
+    return fetch_from_object_storage(url)
+```
+
+```typescript
+// Node.js with lru-cache
+import { LRUCache } from 'lru-cache';
+
+const assetCache = new LRUCache<string, Buffer>({ maxSize: 500 * 1024 * 1024 });
+
+async function getAsset(url: string): Promise<Buffer> {
+  if (assetCache.has(url)) return assetCache.get(url)!;
+  const data = await fetchFromObjectStorage(url);
+  assetCache.set(url, data);
+  return data;
+}
+```
+
+**Eviction policy decisions** — this is where the system design matters, not the library choice:
+
+| Policy | Good for | Trade-off |
+|--------|----------|-----------|
+| **LRU** (Least Recently Used) | Assets with temporal locality — things used recently will be used again | Can evict "always needed" objects that haven't been accessed lately |
+| **LFU** (Least Frequently Used) | Hot assets that are always needed | Frequency counters don't adapt to shifting access patterns |
+| **Size-weighted** | Large blobs where you care about memory budget | Smaller, frequently-accessed objects might be evicted to fit a large one |
+| **TTL-based** | Mutable objects that might change over time | Objects may be served stale within the TTL window |
+
+For a document rendering job where the same assets repeat throughout the job's lifetime — LRU with a job-scoped TTL (1 hour) is the right choice. The access pattern has strong temporal locality.
+
+## The compound effect
+
+Both problems often coexist. A pipeline doing per-asset HTTP calls to a metadata service *and* per-asset object storage fetches doesn't add these costs — it multiplies them.
+
+```
+Before both fixes:
+  200 assets × (70ms HTTP + 400ms S3) = 94 seconds waiting
+
+After both fixes:
+  1 batch HTTP call (200ms) + ~20s S3 with 85% cache hit = ~22 seconds
+```
+
+The same 200 assets. The same data. Just retrieved with different system design.
+
+## The design principle
+
+Before designing any data retrieval path in a distributed system, ask:
+
+1. **Will this be called in a loop?** If yes: design a batch interface.
+2. **Will this data be read repeatedly with the same key?** If yes: design a cache.
+3. **What's the read-to-write ratio?** High read ratio → caching is worth the complexity. Low ratio → it may not be.
+4. **What's the tolerance for stale data?** This sets your cache TTL. Financial data: seconds. Document assets: hours. Static reference data: days.
+
+These questions don't change based on whether your service is Java or Go or Python. The data access patterns are the same. The system design answers are the same. The library you pick to implement the cache or the batch client is the last decision — after you've thought through the design.
+
+**Stack used in this post**: Java / Spring Boot / Caffeine (object storage caching) / Spring WebClient (batch API). Equivalent patterns exist natively in every major backend stack.
+

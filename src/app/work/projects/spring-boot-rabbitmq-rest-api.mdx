@@ -1,7 +1,7 @@
 ---
-title: "Spring Boot 3.4 + RabbitMQ 4 REST API Template"
+title: "Spring Boot 3.4 + RabbitMQ 4 Reference Architecture"
 publishedAt: "2024-01-15"
-summary: "Two-service async messaging system demonstrating producer-consumer pattern with Spring Boot 3.4 and RabbitMQ 4. One-command Docker Compose deployment."
+summary: "Production-ready async messaging template with Spring Boot 3.4 and RabbitMQ 4. Covers the configuration gaps that break most tutorials: virtual host setup, CachingConnectionFactory, consumer concurrency, and health-gated Docker Compose."
 images:
   - "/images/projects/spring-boot-rabbitmq-rest-api/cover-01.svg"
 team:
@@ -14,22 +14,23 @@ link: "https://github.com/whoakashtyagi/Spring-Boot-3.4.1-REST-API-for-RabbitMQ-
 
 ## Overview
 
-A production-ready template for building async messaging systems with **Spring Boot 3.4** and **RabbitMQ 4**. The project demonstrates:
+A reference implementation for async messaging in Java microservices using **Spring Boot 3.4** and **RabbitMQ 4**. Two services — a REST-facing producer and an async consumer — wired together via a durable queue with health-gated Docker Compose startup.
+
+Built to document the **configuration changes** that break existing Spring AMQP setups when upgrading to Spring Boot 3.4 and RabbitMQ 4 — specifically virtual host validation, connection factory setup, and acknowledgment behavior. Most tutorials skip these and fail silently in the new versions.
+
+The project demonstrates:
 - **Producer-Consumer pattern** with two Spring Boot services
-- **REST API** that publishes messages to RabbitMQ
-- **Consumer service** that processes messages asynchronously
-- **Docker Compose** setup for one-command deployment
-- **Latest versions** of Spring Boot and RabbitMQ (as of early 2024)
+- **REST API** on the producer (`POST /api/messages`) publishing to RabbitMQ
+- **Consumer service** processing messages asynchronously with `@RabbitListener`
+- **Durable queue setup** — messages survive broker restarts
+- **Health-gated startup** — services wait for broker readiness before connecting
+- **Consumer concurrency** — configurable thread pool with `concurrency = "3-10"`
 
-## Why This Project?
+## Why This Exists
 
-The gap between "I know what a message queue does" and "I can design reliable async flows in production" is large. This project was deliberately scoped to focus **entirely on the messaging layer** — no UI, no complex business logic, just hands-on practice with:
-- **Producer setup**: Sending messages to queues
-- **Consumer setup**: Receiving and processing messages
-- **Connection management**: Broker connections, channels, failover
-- **Configuration**: Virtual hosts, exchanges, routing keys
+The gap between "I know what a message queue does" and "I can design reliable async flows in production" is real. Working with RabbitMQ in production at Quark — designing event-driven flows with retry logic and dead-letter queues — requires knowing what happens when things go wrong: broker restart, consumer crash mid-processing, queue overflow. This project is a focused baseline: the producer-consumer wiring done correctly, before you add business logic on top.
 
-Built this to **understand Spring AMQP** properly, especially the changes in Spring Boot 3.4 and RabbitMQ 4 (virtual host configuration, connection factory updates).
+It also exists because every tutorial I found for Spring Boot 3.4 + RabbitMQ 4 had at least one configuration gap that caused silent failures. This covers all of them.
 
 ## Architecture
 

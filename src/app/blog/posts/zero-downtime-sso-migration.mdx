@@ -1,0 +1,210 @@
+---
+title: "Zero-Downtime Infrastructure Migrations: The Patterns That Make Them Safe"
+publishedAt: "2026-02-20"
+summary: "How to migrate shared infrastructure — auth systems, databases, message brokers — without downtime or data loss. The Strangler Fig, shadow deployment, and dual-read/dual-write patterns that every distributed system team eventually needs."
+image: "/images/og/home.jpg"
+---
+
+At some point, every production system outgrows its original infrastructure. The authentication system that worked for one service doesn't scale to ten. The database schema that made sense for launch doesn't support the query patterns six months in. The monolith needs to split into services.
+
+The hard part isn't the new system. It's getting from the old system to the new one without taking down production.
+
+This post covers the high-level patterns that make large-scale infrastructure migrations safe — using a real auth system migration (monolith per-service auth → centralized identity with OAuth 2.0 and SAML) as the example throughout. The patterns themselves apply broadly: database migrations, message broker changes, service extraction.
+
+---
+
+## Why "big bang" migrations fail
+
+The instinct for a large migration is to plan a thorough cutover: build the new system fully, schedule a maintenance window, migrate everything, cut over. Clean and complete.
+
+This fails for several reasons:
+
+**Validation surface is too large.** You can't fully test the new system until it sees production traffic. Staging data doesn't cover all the edge cases. The maintenance window is when you find out what you missed — which is the worst possible time.
+
+**Rollback is a full reversal.** If something goes wrong at 3am during the maintenance window, rolling back means undoing everything. If you've migrated data as part of the cutover, rollback might mean data loss.
+
+**The system is down during the transition.** Even if everything works, users are impacted. Enterprise clients in different time zones don't have a "good" maintenance window.
+
+The alternative: design the migration so the system is never fully in either state. It's always partially migrated, with clean rollback options at each step.
+
+---
+
+## Pattern 1: Shadow Deployment
+
+**The idea**: Deploy the new system to production and run it in parallel with the old one — but don't route any production traffic to it.
+
+```
+Production Traffic ──→ Old System ──→ Responds to users
+                           │
+                     (data replicated or exported)
+                           │
+                           ↓
+                       New System ──→ (idle, validating)
+```
+
+The shadow system receives copies of data or requests, processes them, and you validate the output — but the response to users still comes from the old system.
+
+**What this gives you:**
+- The new system runs in production infrastructure (not staging), so you find environment-specific failures before users do.
+- Zero production risk. Users are unaffected.
+- You can validate readiness with real data before any cutover.
+
+**For the auth migration**: Keycloak (the new identity provider) was deployed to production in week 1. All users were exported and imported — with their password hashes intact, so they could log in through Keycloak with existing credentials. For two weeks, Keycloak existed in production but no service pointed to it. We ran automated login tests against it using exported credentials and fixed import failures before any user touched it.
+
+---
+
+## Pattern 2: The Strangler Fig
+
+**The idea**: Gradually route traffic from the old system to the new one, one slice at a time. Named after the strangler fig tree that slowly envelops the host tree.
+
+```
+Phase 1:    Service A → Old Auth    Service B → Old Auth    Service C → Old Auth
+Phase 2:    Service A → New Auth    Service B → Old Auth    Service C → Old Auth
+Phase 3:    Service A → New Auth    Service B → New Auth    Service C → Old Auth
+Phase 4:    Service A → New Auth    Service B → New Auth    Service C → New Auth
+```
+
+At every phase, the system is partially migrated. If Service B's cutover in Phase 3 fails, you roll back only Service B — Services A and C are unaffected.
+
+**The key constraint**: the old and new systems must be able to coexist. They can't both "own" shared state (a user database, a queue) without a coordination mechanism.
+
+**For the auth migration**: Services were migrated to Keycloak one at a time over four weeks. Lower-traffic services went first (lower risk). Each service cutover was monitored for 3-5 days before proceeding to the next. At any point, up to N-1 services could be rolled back independently.
+
+---
+
+## Pattern 3: Dual-Read / Dual-Write (with priority ordering)
+
+When you can't migrate all at once and the old and new systems must stay in sync, dual-read/dual-write bridges the gap.
+
+**Dual-write**: Write to both old and new systems simultaneously. The new system accumulates data in real-time without requiring a historical migration.
+
+```
+Write request:
+  → Write to Old System  (primary — used for reads)
+  → Write to New System  (secondary — building consistency)
+```
+
+**Dual-read with fallback**: The new system is the primary read source. If it can't satisfy the read (data not yet migrated, or validation fails), fall back to the old system.
+
+```java
+// Dual-read authentication — stack: Java / Spring Security
+public Authentication authenticate(String token) {
+    // Try the new system first
+    try {
+        return newAuthProvider.validate(token);
+    } catch (InvalidTokenException e) {
+        // Fall back to old system — token may be a legacy session
+        return legacyAuthProvider.validate(token);
+    }
+}
+```
+
+```python
+# Python equivalent — same pattern
+def authenticate(token: str) -> Auth:
+    try:
+        return new_auth_provider.validate(token)
+    except InvalidTokenError:
+        return legacy_auth_provider.validate(token)
+```
+
+```typescript
+// TypeScript / Node.js
+async function authenticate(token: string): Promise<Auth> {
+  try {
+    return await newAuthProvider.validate(token);
+  } catch {
+    return await legacyAuthProvider.validate(token);
+  }
+}
+```
+
+**The priority ordering matters.** New system first means new tokens are validated against the new system. Old tokens fall through to the legacy validator. This means users who've already migrated (logged in through the new system) never touch the old code path.
+
+**For the auth migration**: Every service ran this dual-validation middleware during the cutover window. A request might cross multiple services with different migration states — Service A on new auth, Service B still on old auth. The middleware on each service handled whatever token it received. Token propagation (passing the original token downstream, not re-issuing) was essential.
+
+---
+
+## Pattern 4: Backward-Compatible Rollouts
+
+The migration of shared data (user records, credentials, schema changes) is where migrations most often go wrong. The moment you touch shared data, rollback becomes more complex.
+
+**Design migration steps to be reversible until the last moment:**
+
+```
+Step 1: Add new column (nullable, with default)    — fully reversible
+Step 2: Write to both old and new column           — fully reversible
+Step 3: Migrate historical data to new column      — reversible with time
+Step 4: Read from new column                       — reversible
+Step 5: Make new column non-nullable               — harder to reverse
+Step 6: Drop old column                            — irreversible
+```
+
+You don't drop the old column until you're confident in the new one, after real production usage. Steps 1-4 are safe to run and pause at any time. Step 6 is your point of no return — don't rush it.
+
+**For credential migration**: Password hashes were migrated in Step 3 — historical data moved before any service change. The key technical detail: most identity systems (Keycloak, Auth0, custom) can import password hashes from bcrypt, PBKDF2, Argon2 directly:
+
+```json
+{
+  "username": "user@example.com",
+  "credentials": [{
+    "type": "password",
+    "hashedSaltedValue": "$2a$10$...",
+    "algorithm": "bcrypt",
+    "hashIterations": 10
+  }]
+}
+```
+
+On first login, the system validates the imported hash. If the user's password matches, it silently re-hashes with the new default algorithm. The user experiences nothing. For non-standard hashing algorithms (a real problem in legacy systems), you write a custom credential provider plugin — the identity system calls it during authentication fallback.
+
+---
+
+## Managing the high-risk edge cases
+
+Every migration has a tail of problematic records that won't cleanly migrate. Finding them proactively — before cutover — is the difference between a smooth launch and a production incident.
+
+**Validation in the shadow phase, not the cutover phase:**
+
+Run automated tests in the shadow period that exercise every edge case you can think of:
+- Users with unusual characters in emails
+- Users with SSO provider connections
+- Service accounts vs. human accounts
+- Users with partially-migrated state from previous migration attempts
+
+The users who fail shadow validation are your problem list. You handle them proactively (targeted outreach, manual migration, admin-assisted reset) rather than reactively (production support tickets at 2am after cutover).
+
+---
+
+## Behavioral compatibility before optimization
+
+When the new system is live, you'll want to tighten configurations that the old system couldn't enforce. Shorter token lifetimes. Stricter password policies. Better session management.
+
+**Do not do this during migration.** Match the old system's behavior exactly first.
+
+```
+OAuth token lifetime:  Legacy = 24 hours  →  New system = 24 hours initially
+Session behavior:      Legacy = stateful  →  New system = stateful initially
+Permission model:      Legacy = flat      →  New system = flat initially
+```
+
+Once the migration is fully complete and stable, optimize incrementally with separate deployments. Mixing behavior changes into infrastructure migration makes failures ambiguous — you don't know if a problem is from the infrastructure change or the behavior change.
+
+---
+
+## The pattern summary
+
+| Pattern | Problem it solves | When to use |
+|---------|-------------------|-------------|
+| **Shadow Deployment** | Validate new system with production data before any traffic | Any infrastructure migration |
+| **Strangler Fig** | Progressive cutover with per-component rollback | Service extraction, auth migration, data store migration |
+| **Dual-Read/Write** | Keep old and new systems in sync during overlap | When users on old and new system will coexist |
+| **Backward-Compatible Schema Changes** | Data migration without a point of no return | Database schema migrations |
+| **Shadow Validation** | Find problematic records before cutover | Anytime you're migrating user or credential data |
+| **Behavior Freeze** | Keep variables isolated during migration | Separating infrastructure change from behavior change |
+
+These patterns aren't specific to auth systems or Java. A database migration from PostgreSQL to a different schema, a message broker migration from RabbitMQ to Kafka, extraction of a service from a monolith — all of them benefit from the same design thinking: never be fully in one state, always have a rollback option, validate before you commit.
+
+Infrastructure migrations fail when they're treated as deployment events. They succeed when they're designed as gradual system transitions.
+
+**Tech stack used in this example**: Java / Spring Boot / Spring Security / Keycloak (OAuth 2.0 + SAML 2.0) / PostgreSQL / Docker. The patterns shown in code are replicated in Python and TypeScript — same design, different syntax.
