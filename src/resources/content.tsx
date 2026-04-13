@@ -48,8 +48,9 @@ const home: Home = {
   image: "/images/og/home.svg",
   label: "Home",
   title: `${person.name} – Backend Engineer`,
-  description: `Backend engineer with 4+ years building enterprise distributed systems, Java microservices, and production AI integrations at Quark Software. 3× Employee of the Quarter.`,
-  headline: <>I build systems that survive contact with production</>,
+  description: `Hi, I'm Akash Tyagi, a backend and infrastructure engineer who thrives at the intersection of scale, data, and systems thinking.`,
+  headline: <>Hi, I'm Akash Tyagi</>,
+
   featured: {
     display: true,
     title: (
@@ -65,9 +66,10 @@ const home: Home = {
   },
   subline: (
     <>
-      Senior backend engineer at Quark — shipping distributed systems, AI integrations, and platform infrastructure
-      that handles real enterprise load. <br />
-      4+ years, 3× Employee of the Quarter, measurable impact on every major delivery.
+      I enjoy solving hard backend problems — distributed systems, system design, data pipelines, and API architecture —
+      the kind where the design matters as much as the code.
+      Currently at Quark Software, shipping microservices, platform infrastructure, and AI features
+      that hold up in production.
     </>
   ),
 };
