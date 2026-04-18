@@ -66,10 +66,10 @@ const home: Home = {
   },
   subline: (
     <>
-      I enjoy solving hard backend problems — distributed systems, system design, data pipelines, and API architecture —
-      the kind where the design matters as much as the code.
-      Currently at Quark Software, shipping microservices, platform infrastructure, and AI features
-      that hold up in production.
+      I build distributed systems that hold up when it actually matters.
+      Four years shipping microservices at Quark has sharpened my instinct for scale, tradeoffs, 
+      and what actually holds up in production. I work AI-first: it's made me faster and more useful 
+      across any stack, not just the ones I know well.
     </>
   ),
 };
@@ -206,15 +206,15 @@ const about: About = {
       },
       {
         name: "Microsoft Certified: Azure AI Engineer Associate",
-        description: <>Demonstrated expertise in designing and implementing AI solutions on Azure, including Azure AI Document Intelligence and Azure AI Services.</>,
+        description: <>Demonstrated expertise in designing and implementing AI solutions on Azure, including Azure AI Document Intelligence and Azure AI Services. <a href="https://learn.microsoft.com/api/credentials/share/en-us/AkashTyagi-5245/EF105323AD0070A1?sharingId=452323B635BFA245" target="_blank" rel="noopener noreferrer">View credential →</a></>,
       },
       {
         name: "Microsoft Azure AI Essentials Professional Certificate",
-        description: <>Foundational certification in Azure AI services and machine learning.</>,
+        description: <>Foundational certification in Azure AI services and machine learning. <a href="https://www.linkedin.com/learning/certificates/54da85b8616aa6ae27fa91fb63b5fae3fb41166c8779dea82987436082fea09f" target="_blank" rel="noopener noreferrer">View credential →</a></>,
       },
       {
         name: "Building Scalable Java Microservices — Google Cloud",
-        description: <>Professional certification in designing and deploying production-grade Java microservices with Spring Boot and Spring Cloud.</>,
+        description: <>Professional certification in designing and deploying production-grade Java microservices with Spring Boot and Spring Cloud. <a href="https://coursera.org/verify/NKE85J26B7M5" target="_blank" rel="noopener noreferrer">View credential →</a></>,
       },
     ],
   },
@@ -308,6 +308,20 @@ const about: About = {
             icon: "redis",
           },
         ],
+        images: [],
+      },
+      {
+        title: "AI-First Development",
+        description: (
+          <>
+            I treat AI as a core part of my development workflow, not a shortcut. I use LLMs to move faster across 
+            unfamiliar stacks, accelerate research, and validate design decisions early — while keeping full ownership 
+            of the architecture and code quality. This lets me contribute meaningfully in any language or framework, 
+            not just the ones I've used for years. The bottleneck is rarely syntax — it's system thinking, 
+            and that transfers everywhere.
+          </>
+        ),
+        tags: [],
         images: [],
       },
       {
